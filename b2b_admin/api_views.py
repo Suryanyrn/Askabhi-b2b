@@ -76,12 +76,19 @@ class CreatePersonnelAPIView(APIView):
                     invite_link = f"{request.scheme}://{request.get_host()}/manager/invite/{manager.invite_token}/"
                     
                     logger.info(f"Manager invite created: {name} for company {company.company_name}.")
-                    # TODO: Send actual email with secure login link
-                    print(f"--- MOCK EMAIL ---")
-                    print(f"To: {email}")
-                    print(f"Subject: Invitation to join {company.company_name} as a Manager")
-                    print(f"Body: Please click the link below to set your password and activate your account:\n{invite_link}")
-                    print(f"------------------")
+                    # Send actual email with secure login link
+                    from django.core.mail import send_mail
+                    from django.conf import settings
+                    try:
+                        send_mail(
+                            subject=f"Invitation to join {company.company_name} as a Manager",
+                            message=f"Hello {name},\n\nYou have been invited to join {company.company_name} as a Manager.\n\nPlease click the link below to set your password and activate your account:\n{invite_link}\n\nWelcome aboard!",
+                            from_email=settings.EMAIL_HOST_USER,
+                            recipient_list=[email],
+                            fail_silently=False,
+                        )
+                    except Exception as mail_err:
+                        logger.error(f"Failed to send manager invite email to {email}: {mail_err}")
                     
                     log_action(request.user, f"Invited new Manager: {name}")
                     

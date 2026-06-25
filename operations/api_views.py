@@ -12,6 +12,7 @@ from b2b_manager.utils import log_action
 import uuid
 import datetime
 from .models import Notification
+from django.conf import settings
 logger = logging.getLogger('b2b_admin')
 from b2b_admin.utils import get_user_company, get_display_name
 
@@ -230,6 +231,20 @@ class DispatchOrderAPIView(APIView):
                 # Log the Tracking URL for the client
                 tracking_url = f"{request.scheme}://{request.get_host()}/track/{shipment.id}/"
                 logger.info(f"Order #{order.order_number} Dispatched. Client Tracking URL: {tracking_url}")
+                
+                # Send email to the client with the tracking link
+                from django.core.mail import send_mail
+                try:
+                    send_mail(
+                        subject=f'Your Order #{order.order_number} has been dispatched!',
+                        message=f'Hello,\n\nYour order has been dispatched and is on its way. You can track your shipment live using the following link:\n{tracking_url}\n\nThank you for choosing us!',
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[order.client.email],
+                        fail_silently=False,
+                    )
+                except Exception as mail_err:
+                    logger.error(f"Failed to send tracking link email to {order.client.email}: {mail_err}")
+                
                 
                 # Notify driver
                 Notification.objects.create(
