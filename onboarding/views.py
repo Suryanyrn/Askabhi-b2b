@@ -129,7 +129,7 @@ def send_otp(request):
         if not email:
             return JsonResponse({'status': 'error', 'message': 'Email is required.'}, status=400)
             
-        free_domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com']
+        free_domains = ['yahoo.com', 'hotmail.com', 'outlook.com']
         domain = email.split('@')[1].lower() if '@' in email else ""
         if domain in free_domains:
             return JsonResponse({'status': 'error', 'message': 'Please use a valid company domain email.'}, status=400)
