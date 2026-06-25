@@ -1,0 +1,396 @@
+{% extends 'b2b_admin/base.html' %}
+
+{% block title %}Products - B2B Logistics{% endblock %}
+{% block page_title %}Products Inventory{% endblock %}
+{% block nav_products_class %}active{% endblock %}
+
+{% block content %}
+<div class="ds-card" style="margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: space-between; padding: var(--space-5);">
+    <div>
+        <h2 class="ds-card-title m-0">Product Catalog</h2>
+        <p class="text-neutral-500 m-0 text-sm">Manage global products and track inventory across all warehouses.</p>
+    </div>
+    <div style="display: flex; gap: var(--space-3);">
+        <button class="btn btn-secondary" onclick="openUpdateStockModal()">Update Stock</button>
+        <button class="btn btn-primary" onclick="openAddProductModal()">Add Product</button>
+    </div>
+</div>
+
+<div class="ds-card">
+    <div class="ds-table-container">
+        <table class="ds-table">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Total Global Stock</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td class="font-bold text-neutral-900">{{ product.sku }}</td>
+                    <td class="font-medium text-neutral-800">{{ product.name }}</td>
+                    <td class="text-neutral-500 text-sm">{{ product.description|truncatechars:50|default:"—" }}</td>
+                    <td>
+                        <div style="margin-bottom: var(--space-2);">
+                            {% if product.total_stock %}
+                                <span class="ds-badge ds-badge-primary font-bold">{{ product.total_stock }} Total Units</span>
+                            {% else %}
+                                <span class="ds-badge ds-badge-error font-bold">0 Units</span>
+                            {% endif %}
+                        </div>
+                        {% if product.total_stock %}
+                            <div style="display: flex; flex-wrap: wrap; gap: var(--space-1);">
+                                {% for stock in product.warehouse_stocks.all %}
+                                    {% if stock.stock_quantity > 0 %}
+                                        <span class="ds-badge ds-badge-neutral text-xs">{{ stock.warehouse.name }}: <strong>{{ stock.stock_quantity }}</strong></span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-icon" onclick="openEditProductModal('{{ product.id }}', '{{ product.name|escapejs }}', '{{ product.sku|escapejs }}', '{{ product.description|escapejs }}')" title="Edit Product">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-neutral-500 py-8">
+                        <div style="margin-bottom: var(--space-4);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-1">No products found</h3>
+                        <p class="text-sm m-0">Add your first product to begin tracking inventory.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div id="addProductModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal">
+        <div class="ds-modal-header">
+            <h2>Add New Product</h2>
+            <button class="btn-icon" onclick="closeAddProductModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="addProductForm">
+            <div class="ds-modal-body">
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" name="name" class="form-input" required placeholder="e.g. Premium Widget" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">SKU (Stock Keeping Unit)</label>
+                    <input type="text" name="sku" class="form-input" required placeholder="e.g. WIDG-001">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description (Optional)</label>
+                    <textarea name="description" class="form-input" placeholder="Brief description" rows="3"></textarea>
+                </div>
+
+                <div id="productFormAlert" class="ds-alert hidden"></div>
+            </div>
+
+            <div class="ds-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Update Stock Modal -->
+<div id="updateStockModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal">
+        <div class="ds-modal-header">
+            <h2>Update Inventory Stock</h2>
+            <button class="btn-icon" onclick="closeUpdateStockModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="updateStockForm">
+            <div class="ds-modal-body">
+                <div class="form-group">
+                    <label class="form-label">Target Warehouse</label>
+                    <select name="warehouse_id" class="form-input" required>
+                        <option value="">-- Select Warehouse --</option>
+                        {% for warehouse in warehouses %}
+                            <option value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Target Product</label>
+                    <select name="product_id" class="form-input" required>
+                        <option value="">-- Select Product --</option>
+                        {% for product in products %}
+                            <option value="{{ product.id }}">{{ product.sku }} - {{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Quantity Change (+ to add, - to remove)</label>
+                    <input type="number" name="quantity_change" class="form-input" required placeholder="e.g. 50 or -10">
+                    <span class="text-xs text-neutral-500 mt-1 block">Use negative numbers to deduct stock (e.g. -5).</span>
+                </div>
+
+                <div id="stockFormAlert" class="ds-alert hidden"></div>
+            </div>
+
+            <div class="ds-modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeUpdateStockModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Process Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div id="editProductModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal">
+        <div class="ds-modal-header">
+            <h2>Edit Product</h2>
+            <button class="btn-icon" onclick="closeEditProductModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="editProductForm">
+            <div class="ds-modal-body">
+                <input type="hidden" name="product_id" id="edit_product_id">
+                
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" name="name" id="edit_product_name" class="form-input" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SKU (Stock Keeping Unit)</label>
+                    <input type="text" name="sku" id="edit_product_sku" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" id="edit_product_desc" class="form-input" rows="3"></textarea>
+                </div>
+
+                <div id="editProductAlert" class="ds-alert hidden"></div>
+            </div>
+
+            <div class="ds-modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-ghost" style="color: var(--color-error-600);" onclick="deleteProduct()">Delete Product</button>
+                <div>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Product Modal
+    function openAddProductModal() {
+        document.getElementById('addProductAlert')?.classList.add('hidden');
+        document.getElementById('addProductModal').classList.remove('hidden');
+    }
+
+    function closeAddProductModal() {
+        document.getElementById('addProductModal').classList.add('hidden');
+    }
+
+    document.getElementById('addProductForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (this.dataset.submitting) return;
+        this.dataset.submitting = 'true';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        const alertBox = document.getElementById('productFormAlert');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        
+        alertBox.className = 'ds-alert hidden';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Processing...';
+        
+        fetch("{% url 'api_create_product' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify(data)
+        }).then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden');
+            if (res.status === 201) {
+                alertBox.classList.add('ds-alert-success');
+                alertBox.innerText = res.body.message;
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Create Product';
+                delete this.dataset.submitting;
+            }
+        }).catch(error => {
+            alertBox.classList.remove('hidden');
+            alertBox.classList.add('ds-alert-error');
+            alertBox.innerText = 'Network error. Please try again.';
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Create Product';
+            delete this.dataset.submitting;
+        });
+    });
+
+    // Stock Modal
+    function openUpdateStockModal() {
+        document.getElementById('stockFormAlert')?.classList.add('hidden');
+        document.getElementById('updateStockModal').classList.remove('hidden');
+    }
+
+    function closeUpdateStockModal() {
+        document.getElementById('updateStockModal').classList.add('hidden');
+    }
+
+    document.getElementById('updateStockForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (this.dataset.submitting) return;
+        this.dataset.submitting = 'true';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        const alertBox = document.getElementById('stockFormAlert');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const qtyInput = this.querySelector('input[name="quantity_change"]');
+        
+        alertBox.className = 'ds-alert hidden';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Processing...';
+        
+        fetch("{% url 'api_update_stock' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify(data)
+        }).then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden');
+            if (res.status === 200) {
+                alertBox.classList.add('ds-alert-success');
+                alertBox.innerText = res.body.message;
+                qtyInput.value = ''; // Reset quantity on success
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Process Update';
+                delete this.dataset.submitting;
+            }
+        }).catch(error => {
+            alertBox.classList.remove('hidden');
+            alertBox.classList.add('ds-alert-error');
+            alertBox.innerText = 'Network error. Please try again.';
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Process Update';
+            delete this.dataset.submitting;
+        });
+    });
+
+    // Edit/Delete Product Logic
+    function openEditProductModal(id, name, sku, desc) {
+        document.getElementById('edit_product_id').value = id;
+        document.getElementById('edit_product_name').value = name;
+        document.getElementById('edit_product_sku').value = sku;
+        document.getElementById('edit_product_desc').value = desc;
+        
+        document.getElementById('editProductAlert').classList.add('hidden');
+        document.getElementById('editProductModal').classList.remove('hidden');
+    }
+
+    function closeEditProductModal() {
+        document.getElementById('editProductModal').classList.add('hidden');
+    }
+
+    document.getElementById('editProductForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (this.dataset.submitting) return;
+        this.dataset.submitting = 'true';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        const alertBox = document.getElementById('editProductAlert');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        
+        alertBox.className = 'ds-alert hidden';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Saving...';
+        
+        fetch("{% url 'api_update_product' %}", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify(data)
+        }).then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden');
+            if (res.status === 200) {
+                alertBox.classList.add('ds-alert-success');
+                alertBox.innerText = res.body.message;
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Save Changes';
+                delete this.dataset.submitting;
+            }
+        });
+    });
+
+    function deleteProduct() {
+        if(!confirm("Are you sure you want to delete this Product? This action cannot be undone.")) return;
+        
+        const id = document.getElementById('edit_product_id').value;
+        const alertBox = document.getElementById('editProductAlert');
+        
+        fetch("{% url 'api_delete_product' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({product_id: id})
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden', 'ds-alert-success', 'ds-alert-error');
+            if (res.status === 200) {
+                window.location.reload();
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+            }
+        });
+    }
+</script>
+{% endblock %}

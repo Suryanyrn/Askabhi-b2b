@@ -1,0 +1,355 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Driver Dashboard</title>
+    
+    <!-- Link to the design system -->
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        .gps-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--color-success-600);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-top: var(--space-2);
+        }
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--color-success-500);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(var(--color-success-500-rgb, 16, 185, 129), 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(var(--color-success-500-rgb, 16, 185, 129), 0); }
+            100% { box-shadow: 0 0 0 0 rgba(var(--color-success-500-rgb, 16, 185, 129), 0); }
+        }
+    </style>
+</head>
+<body style="background-color: var(--surface-secondary); margin: 0; padding: 0;">
+
+    <header style="background: white; padding: var(--space-4) var(--space-5); box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50;">
+        <h1 class="text-lg font-bold text-neutral-900 m-0">{% trans "Welcome" %}, {{ driver.name }}</h1>
+        <div style="display: flex; gap: var(--space-4); align-items: center;">
+            <form action="{% url 'set_language' %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <select name="language" onchange="this.form.submit()" class="form-input" style="padding: var(--space-1) var(--space-2); min-height: unset; width: auto; font-size: var(--font-size-xs); height: 32px;">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                        <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                            {{ language.name_local }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+            <form action="{% url 'driver_logout' %}" method="post" style="display:inline; margin:0; padding:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ghost btn-sm" style="color: var(--color-error-600);">{% trans "Logout" %}</button>
+            </form>
+        </div>
+    </header>
+
+    <div style="padding: var(--space-4); max-width: 600px; margin: 0 auto;">
+    {% if shipment %}
+        <div class="ds-card" style="padding: var(--space-5); margin-bottom: var(--space-5);">
+            {% if shipment.status == 'ACTIVE' %}
+                <span class="ds-badge ds-badge-warning font-bold mb-3">{% trans "DISPATCHED" %}</span>
+                <h2 class="text-xl font-bold text-neutral-900 mt-0 mb-4">{% trans "New Delivery Assignment" %}</h2>
+            {% elif shipment.status == 'IN_TRANSIT' %}
+                <span class="ds-badge ds-badge-primary font-bold mb-1">{% trans "IN TRANSIT" %}</span>
+                <div class="gps-indicator mb-3"><div class="pulse"></div> {% trans "GPS Active" %}</div>
+                <h2 class="text-xl font-bold text-neutral-900 mt-0 mb-4">{% trans "Delivery in Progress" %}</h2>
+            {% endif %}
+            
+            <div class="text-sm text-neutral-900 mb-2">
+                <strong class="text-neutral-500">{% trans "Order" %}:</strong> {{ shipment.order.order_number }}
+            </div>
+            <div class="text-sm text-neutral-900 mb-4">
+                <strong class="text-neutral-500">{% trans "Client" %}:</strong> {{ shipment.order.client.name }}
+            </div>
+        
+            <!-- Map Container -->
+            <div id="map" style="width: 100%; height: 250px; border-radius: var(--radius-md); border: 1px solid var(--color-neutral-300); margin-bottom: var(--space-4); background: var(--color-neutral-100); z-index: 1;"></div>
+            {% if shipment.route_geo_json %}
+                {{ shipment.route_geo_json|json_script:"route-data" }}
+            {% else %}
+                <script id="route-data" type="application/json">[]</script>
+            {% endif %}
+
+            <div style="background: var(--color-neutral-50); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200); margin-bottom: var(--space-4);">
+                <strong class="text-neutral-900 block mb-1">{% trans "Destination Address" %}:</strong>
+                <span class="text-sm text-neutral-600">{{ shipment.order.client.address }}</span>
+            </div>
+            
+            {% if shipment.status == 'ACTIVE' %}
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">{% trans "Vehicle Registration" %}</label>
+                    <input type="text" id="vehicleInfo" class="form-input" placeholder="e.g., MH 12 AB 1234" required>
+                </div>
+                <button class="btn btn-primary w-full" id="startBtn" onclick="startTrip()">▶ {% trans "Start Delivery" %}</button>
+                <p class="text-xs text-center text-neutral-500 mt-3 mb-0">{% trans "Click to enable GPS tracking and notify the client." %}</p>
+            {% elif shipment.status == 'IN_TRANSIT' %}
+                <div style="text-align: center; margin-bottom: var(--space-4);">
+                    <div class="gps-indicator">
+                        <div class="pulse"></div>
+                        {% trans "Live Location Active" %}
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: var(--space-4);">
+                    <label class="form-label">{% trans "Upload Proof of Delivery" %}</label>
+                    <input type="file" id="podImage" class="form-input" accept="image/*" capture="environment" style="padding: 10px;" required>
+                </div>
+                <div id="podAlert" class="ds-alert hidden" style="margin-top: var(--space-4); margin-bottom: var(--space-4);"></div>
+
+                <button class="btn w-full" id="deliverBtn" onclick="markDelivered()" style="background-color: var(--color-success-600); color: white; border-color: var(--color-success-600);">✓ {% trans "Upload & Verify Delivery" %}</button>
+                <p class="text-xs text-center text-neutral-500 mt-3 mb-0">{% trans "You must be within 50 meters of the destination to mark delivered." %}</p>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="ds-card" style="text-align: center; padding: var(--space-8) var(--space-5);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300); margin-bottom: var(--space-4);"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            <h3 class="text-xl font-bold text-neutral-900 mt-0 mb-2">{% trans "No Active Shipments" %}</h3>
+            <p class="text-sm text-neutral-500 m-0">{% trans "You currently have no pending deliveries. Sit tight!" %}</p>
+        </div>
+    {% endif %}
+
+    {% if completed_shipments %}
+    <div style="margin-top: var(--space-8);">
+        <h3 class="text-lg font-bold text-neutral-900 mb-4 mt-0">Previous Deliveries</h3>
+        {% for s in completed_shipments %}
+        <div class="ds-card" style="margin-bottom: var(--space-4); padding: var(--space-4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+                <h4 class="font-bold text-neutral-900 m-0">Order #{{ s.order.order_number }}</h4>
+                {% if s.status == 'PENDING_APPROVAL' %}
+                <span class="ds-badge ds-badge-warning font-bold">Pending Review</span>
+                {% else %}
+                <span class="ds-badge ds-badge-success font-bold">Completed</span>
+                {% endif %}
+            </div>
+            <div class="text-sm text-neutral-500 mb-1">Client: {{ s.order.client.name }}</div>
+            <div class="text-sm text-neutral-500 mb-1">Vehicle: {{ s.vehicle_info }}</div>
+            {% if s.completed_at %}
+            <div class="text-sm text-neutral-500">Delivered: {{ s.completed_at|date:"M d, Y h:i a" }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    </div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    // Map Initialization
+    let map = null;
+    const routeScript = document.getElementById('route-data');
+    if (routeScript) {
+        const routeJson = JSON.parse(routeScript.textContent);
+        map = L.map('map');
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        const destIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+        });
+
+        if (routeJson && routeJson.length > 0) {
+            L.polyline(routeJson, {color: 'var(--color-primary-500)', weight: 4, opacity: 0.7}).addTo(map);
+            L.marker(routeJson[0]).addTo(map).bindPopup("Start Point");
+            L.marker(routeJson[routeJson.length - 1], {icon: destIcon}).addTo(map).bindPopup("Destination");
+            map.fitBounds(L.polyline(routeJson).getBounds(), {padding: [20, 20]});
+        } else {
+            // Fallback
+            map.setView([{{ shipment.order.destination_lat|default:0 }}, {{ shipment.order.destination_lng|default:0 }}], 13);
+            L.marker([{{ shipment.order.destination_lat|default:0 }}, {{ shipment.order.destination_lng|default:0 }}], {icon: destIcon}).addTo(map);
+        }
+    }
+
+    function showError(msg) {
+        const alertDiv = document.getElementById('podAlert');
+        if (alertDiv) {
+            alertDiv.innerText = msg;
+            alertDiv.classList.remove('hidden');
+            alertDiv.classList.add('ds-alert-error');
+        } else {
+            alert(msg);
+        }
+    }
+
+    function startTrip() {
+        const vehicleInfo = document.getElementById('vehicleInfo').value;
+        if (!vehicleInfo) {
+            showError('Please enter your vehicle registration number.');
+            return;
+        }
+        updateStatus('IN_TRANSIT', { vehicle_info: vehicleInfo });
+    }
+
+    function markDelivered() {
+        const podInput = document.getElementById('podImage');
+        if (!podInput.files || podInput.files.length === 0) {
+            showError('Please select or capture a Proof of Delivery image.');
+            return;
+        }
+        
+        if (!confirm("Are you sure you want to mark this delivery as Pending Approval?")) return;
+        
+        const btn = document.getElementById('deliverBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="ds-spinner"></span> Verifying Location...';
+        
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    btn.innerHTML = '<span class="ds-spinner"></span> Uploading Proof...';
+                    
+                    // 1. Get Presigned URL
+                    fetch("{% url 'api_mock_presigned_url' %}?filename=" + encodeURIComponent(podInput.files[0].name))
+                    .then(r => r.json())
+                    .then(presignedData => {
+                        // 2. Upload to Presigned URL
+                        const formData = new FormData();
+                        formData.append('file', podInput.files[0]);
+                        
+                        return fetch(presignedData.url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: formData
+                        }).then(uploadRes => {
+                            if (!uploadRes.ok) {
+                                throw new Error('Upload failed with status ' + uploadRes.status);
+                            }
+                            return uploadRes.json();
+                        }).then(uploadData => {
+                            if (!uploadData.file_url) {
+                                throw new Error('Upload did not return a file URL.');
+                            }
+                            // 3. Update Status
+                            btn.innerHTML = '<span class="ds-spinner"></span> Finishing...';
+                            updateStatus('PENDING_APPROVAL', {
+                                lat: lat,
+                                lng: lng,
+                                proof_of_delivery_url: uploadData.file_url
+                            });
+                        });
+                    }).catch(err => {
+                        showError("Error uploading proof. " + err.message);
+                        btn.disabled = false;
+                        btn.innerText = 'Upload & Verify Delivery';
+                    });
+                },
+                function(error) {
+                    showError("GPS Location is required to verify delivery. Please enable location services.");
+                    btn.disabled = false;
+                    btn.innerText = 'Upload & Verify Delivery';
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        } else {
+            showError("Geolocation is not supported by your browser.");
+            btn.disabled = false;
+            btn.innerText = 'Upload & Verify Delivery';
+        }
+    }
+
+    function updateStatus(newStatus, extraData = {}) {
+        const btn = document.getElementById('startBtn');
+        const dBtn = document.getElementById('deliverBtn');
+        const targetBtn = newStatus === 'IN_TRANSIT' ? btn : dBtn;
+        
+        if(targetBtn) { targetBtn.disabled = true; targetBtn.innerHTML = '<span class="ds-spinner"></span> Updating...'; }
+
+        fetch("{% url 'api_driver_update_status' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                shipment_id: '{{ shipment.id }}',
+                status: newStatus,
+                ...extraData
+            })
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            if (res.status === 200) {
+                window.location.reload();
+            } else {
+                showError(res.body.error || 'Failed to update status.');
+                if(targetBtn) {
+                    targetBtn.disabled = false;
+                    targetBtn.innerText = newStatus === 'IN_TRANSIT' ? 'Start Trip' : 'Upload & Verify Delivery';
+                }
+            }
+        }).catch(err => {
+            showError("Network error.");
+            if(targetBtn) {
+                targetBtn.disabled = false;
+                targetBtn.innerText = newStatus === 'IN_TRANSIT' ? 'Start Trip' : 'Upload & Verify Delivery';
+            }
+        });
+    }
+
+    {% if shipment and shipment.status == 'IN_TRANSIT' %}
+    // WebSocket Location Streaming
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = protocol + '//' + window.location.host + '/ws/tracking/{{ shipment.id }}/';
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = function(e) {
+        console.log("WebSocket connected. Starting location tracking...");
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(
+                function(position) {
+                    const data = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify(data));
+                    }
+                },
+                function(error) {
+                    console.error("Geolocation error:", error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 10000,
+                    timeout: 5000
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+    };
+
+    socket.onerror = function(e) {
+        console.error("WebSocket error", e);
+    };
+    {% endif %}
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: pa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "ਤੁਹਾਡੇ ਕੋਲ ਵਰਤਮਾਨ ਵਿੱਚ ਕੋਈ ਬਕਾਇਆ ਡਿਲੀਵਰੀ ਨਹੀਂ ਹੈ। ਤੰਗ ਬੈਠੋ!"
+
+msgid "Enter your password"
+msgstr "ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ"
+
+msgid "Mobile Number"
+msgstr "ਮੋਬਾਇਲ ਨੰਬਰ"
+
+msgid "Warehouse"
+msgstr "ਵੇਅਰਹਾਊਸ"
+
+msgid "Edit Profile"
+msgstr "ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ"
+
+msgid "Password (Sent via SMS)"
+msgstr "ਪਾਸਵਰਡ (SMS ਦੁਆਰਾ ਭੇਜਿਆ ਗਿਆ)"
+
+msgid "Phone Number"
+msgstr "ਫੋਨ ਨੰਬਰ"
+
+msgid "IN TRANSIT"
+msgstr "ਢੁਆਈ ਵਿੱਚ"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "GPS ਟਰੈਕਿੰਗ ਨੂੰ ਸਮਰੱਥ ਕਰਨ ਅਤੇ ਕਲਾਇੰਟ ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।"
+
+msgid "Destination Address"
+msgstr "ਮੰਜ਼ਿਲ ਦਾ ਪਤਾ"
+
+msgid "Orders"
+msgstr "ਆਰਡਰ"
+
+msgid "New Delivery Assignment"
+msgstr "ਨਵੀਂ ਡਿਲੀਵਰੀ ਅਸਾਈਨਮੈਂਟ"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "ਡੈਸ਼ਬੋਰਡ - B2B ਟਰੈਕਿੰਗ ਪੋਰਟਲ"
+
+msgid "Clients"
+msgstr "ਗਾਹਕ"
+
+msgid "Enter your phone number"
+msgstr "ਆਪਣਾ ਫ਼ੋਨ ਨੰਬਰ ਦਾਖਲ ਕਰੋ"
+
+msgid "Logout"
+msgstr "ਲਾਗਆਉਟ"
+
+msgid "Dashboard"
+msgstr "ਡੈਸ਼ਬੋਰਡ"
+
+msgid "Login to Dashboard"
+msgstr "ਡੈਸ਼ਬੋਰਡ 'ਤੇ ਲੌਗਇਨ ਕਰੋ"
+
+msgid "Driver App"
+msgstr "ਡਰਾਈਵਰ ਐਪ"
+
+msgid "Welcome"
+msgstr "ਸੁਆਗਤ ਹੈ"
+
+msgid "No Active Shipments"
+msgstr "ਕੋਈ ਸਰਗਰਮ ਸ਼ਿਪਮੈਂਟ ਨਹੀਂ"
+
+msgid "Cancel"
+msgstr "ਰੱਦ ਕਰੋ"
+
+msgid "Delivery in Progress"
+msgstr "ਡਿਲੀਵਰੀ ਜਾਰੀ ਹੈ"
+
+msgid "Sign In"
+msgstr "ਸਾਈਨ - ਇਨ"
+
+msgid "Proof of Delivery"
+msgstr "ਡਿਲਿਵਰੀ ਦਾ ਸਬੂਤ"
+
+msgid "Enter registered mobile no."
+msgstr "ਰਜਿਸਟਰਡ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ।"
+
+msgid "Inventory Logs"
+msgstr "ਵਸਤੂ ਸੂਚੀ"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"ਕਿਰਪਾ ਕਰਕੇ ਡਿਲੀਵਰੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਲਾਇੰਟ ਦੇ ਹਸਤਾਖਰ ਜਾਂ ਵੇਅਰਹਾਊਸ ਸੀਲ ਦੀ ਇੱਕ"
+" ਤਸਵੀਰ ਕੈਪਚਰ ਕਰੋ।"
+
+msgid "Drivers"
+msgstr "ਡਰਾਈਵਰ"
+
+msgid "Products"
+msgstr "ਉਤਪਾਦ"
+
+msgid "Password"
+msgstr "ਪਾਸਵਰਡ"
+
+msgid "GPS Active"
+msgstr "GPS ਕਿਰਿਆਸ਼ੀਲ"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "ਆਪਣੇ ਡਿਲੀਵਰੀ ਅਸਾਈਨਮੈਂਟ ਦੇਖਣ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ"
+
+msgid "Previous Orders"
+msgstr "ਪਿਛਲੇ ਆਰਡਰ"
+
+msgid "Audit Logs"
+msgstr "ਆਡਿਟ ਲੌਗਸ"
+
+msgid "Upload & Complete"
+msgstr "ਅੱਪਲੋਡ ਅਤੇ ਪੂਰਾ ਕਰੋ"
+
+msgid "DISPATCHED"
+msgstr "ਡਿਸਪੈਚ ਕੀਤਾ ਗਿਆ"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"ਡਿਲੀਵਰ ਦੀ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਮੰਜ਼ਿਲ ਦੇ 50 ਮੀਟਰ ਦੇ ਅੰਦਰ ਹੋਣਾ ਚਾਹੀਦਾ "
+"ਹੈ।"
+
+msgid "Enter your temporary password"
+msgstr "ਆਪਣਾ ਅਸਥਾਈ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ"
+
+msgid "Order"
+msgstr "ਆਰਡਰ"
+
+msgid "Client"
+msgstr "ਕਲਾਇੰਟ"
+
+msgid "Managers"
+msgstr "ਪ੍ਰਬੰਧਕ"
+
+msgid "Shipments"
+msgstr "ਸ਼ਿਪਮੈਂਟਸ"
+
+msgid "Mark as Delivered"
+msgstr "ਡਿਲੀਵਰ ਕੀਤੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ"
+
+msgid "Change Password"
+msgstr "ਪਾਸਵਰਡ ਬਦਲੋ"
+
+msgid "Start Delivery"
+msgstr "ਡਿਲੀਵਰੀ ਸ਼ੁਰੂ ਕਰੋ"

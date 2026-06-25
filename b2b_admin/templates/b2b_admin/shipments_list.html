@@ -1,0 +1,123 @@
+{% extends 'b2b_admin/base.html' %}
+{% load static %}
+
+{% block title %}Shipments & Live Tracking{% endblock %}
+
+{% block nav_shipments_class %}active{% endblock %}
+{% block page_title %}Active Shipments Tracking{% endblock %}
+
+{% block extra_css %}
+<style>
+    @keyframes pulse-ring {
+        0% { box-shadow: 0 0 0 0 rgba(var(--color-primary-500-rgb, 99, 102, 241), 0.5); }
+        70% { box-shadow: 0 0 0 6px rgba(var(--color-primary-500-rgb, 99, 102, 241), 0); }
+        100% { box-shadow: 0 0 0 0 rgba(var(--color-primary-500-rgb, 99, 102, 241), 0); }
+    }
+    .pulse-status {
+        animation: pulse-ring 2s infinite;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ds-card" style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center; padding: var(--space-5);">
+    <div>
+        <h2 class="ds-card-title m-0">Live Dispatched Orders</h2>
+        <p class="text-neutral-500 m-0 text-sm">Monitor in-transit shipments and their live GPS telemetry.</p>
+    </div>
+</div>
+
+<div class="ds-card">
+    <div class="ds-table-container">
+        <table class="ds-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Client</th>
+                    <th>Driver</th>
+                    <th>Vehicle</th>
+                    <th>ETA (IST)</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shipment in shipments %}
+                <tr>
+                    <td><strong class="text-neutral-900">{{ shipment.order.order_number }}</strong></td>
+                    <td>
+                        <strong class="text-neutral-800">{{ shipment.order.client.name }}</strong><br>
+                        <span class="text-xs text-neutral-500">{{ shipment.order.destination_address|truncatechars:30 }}</span>
+                    </td>
+                    <td>
+                        <strong class="text-neutral-800">{{ shipment.driver.name }}</strong><br>
+                        <span class="text-xs text-neutral-500">{{ shipment.driver.phone }}</span>
+                    </td>
+                    <td class="text-sm text-neutral-600">{{ shipment.vehicle_info|default:'—' }}</td>
+                    <td class="text-sm text-neutral-600">
+                        {% if shipment.estimated_delivery_time %}
+                            {{ shipment.estimated_delivery_time|date:"h:i A" }} IST
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if shipment.status == 'PENDING_APPROVAL' %}
+                            <span class="ds-badge ds-badge-warning font-bold">PENDING APPROVAL</span>
+                        {% else %}
+                            <span class="ds-badge ds-badge-primary pulse-status font-bold">IN TRANSIT</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        {% if shipment.status == 'PENDING_APPROVAL' %}
+                        <button class="btn btn-warning btn-sm" 
+                            data-id="{{ shipment.id }}"
+                            data-order="{{ shipment.order.order_number }}"
+                            data-driver="{{ shipment.driver.name|escapejs }}"
+                            data-proof="{{ shipment.proof_of_delivery_url|escapejs }}"
+                            onclick="openReviewModal(this)">
+                            Review POD
+                        </button>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm" 
+                            data-id="{{ shipment.id }}"
+                            data-order="{{ shipment.order.order_number }}"
+                            data-client="{{ shipment.order.client.name|escapejs }}"
+                            data-destination="{{ shipment.order.destination_address|escapejs }}"
+                            data-driver="{{ shipment.driver.name|escapejs }}"
+                            data-phone="{{ shipment.driver.phone|escapejs }}"
+                            data-vehicle="{{ shipment.vehicle_info|default:'--'|escapejs }}"
+                            data-eta="{{ shipment.estimated_delivery_time|date:'h:i A (M d)'|default:'--' }} IST"
+                            data-duration="{{ shipment.estimated_duration|default:'--' }}"
+                            onclick="openTrackingModal(this)" 
+                            style="display: inline-flex; align-items: center; gap: var(--space-1);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Track Live
+                        </button>
+                        {% if shipment.route_geo_json %}
+                            {% with "route-"|add:shipment.id as script_id %}
+                                {{ shipment.route_geo_json|json_script:script_id }}
+                            {% endwith %}
+                        {% else %}
+                            <script id="route-{{ shipment.id }}" type="application/json">[]</script>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-neutral-500 py-8">
+                        <div style="margin-bottom: var(--space-4);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300);"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-1">No active shipments</h3>
+                        <p class="text-sm m-0">Dispatched orders will appear here for live tracking.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

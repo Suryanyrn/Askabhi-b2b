@@ -1,0 +1,157 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr ""
+"Vous n'avez actuellement aucune livraison en attente. Asseyez-vous bien !"
+
+msgid "Enter your password"
+msgstr "Entrez votre mot de passe"
+
+msgid "Mobile Number"
+msgstr "Numéro de portable"
+
+msgid "Warehouse"
+msgstr "Entrepôt"
+
+msgid "Edit Profile"
+msgstr "Modifier le profil"
+
+msgid "Password (Sent via SMS)"
+msgstr "Mot de passe (envoyé par SMS)"
+
+msgid "Phone Number"
+msgstr "Numéro de téléphone"
+
+msgid "IN TRANSIT"
+msgstr "EN TRANSIT"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "Cliquez pour activer le suivi GPS et avertir le client."
+
+msgid "Destination Address"
+msgstr "Adresse de destination"
+
+msgid "Orders"
+msgstr "Ordres"
+
+msgid "New Delivery Assignment"
+msgstr "Nouvelle mission de livraison"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "Tableau de bord - Portail de suivi B2B"
+
+msgid "Clients"
+msgstr "Clientèle"
+
+msgid "Enter your phone number"
+msgstr "Entrez votre numéro de téléphone"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Login to Dashboard"
+msgstr "Connectez-vous au tableau de bord"
+
+msgid "Driver App"
+msgstr "Application pilote"
+
+msgid "Welcome"
+msgstr "Accueillir"
+
+msgid "No Active Shipments"
+msgstr "Aucune expédition active"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Delivery in Progress"
+msgstr "Livraison en cours"
+
+msgid "Sign In"
+msgstr "Se connecter"
+
+msgid "Proof of Delivery"
+msgstr "Preuve de livraison"
+
+msgid "Enter registered mobile no."
+msgstr "Entrez le numéro de mobile enregistré."
+
+msgid "Inventory Logs"
+msgstr "Journaux d'inventaire"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"Veuillez capturer une image de la signature du client ou du sceau de "
+"l'entrepôt pour vérifier la livraison."
+
+msgid "Drivers"
+msgstr "Pilotes"
+
+msgid "Products"
+msgstr "Produits"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "GPS Active"
+msgstr "GPS actif"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "Connectez-vous pour consulter vos missions de livraison"
+
+msgid "Previous Orders"
+msgstr "Commandes précédentes"
+
+msgid "Audit Logs"
+msgstr "Journaux d'audit"
+
+msgid "Upload & Complete"
+msgstr "Télécharger et terminer"
+
+msgid "DISPATCHED"
+msgstr "EXPÉDIÉ"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"Vous devez être à moins de 50 mètres de la destination pour marquer la "
+"livraison."
+
+msgid "Enter your temporary password"
+msgstr "Entrez votre mot de passe temporaire"
+
+msgid "Order"
+msgstr "Commande"
+
+msgid "Client"
+msgstr "Client"
+
+msgid "Managers"
+msgstr "Gestionnaires"
+
+msgid "Shipments"
+msgstr "Expéditions"
+
+msgid "Mark as Delivered"
+msgstr "Marquer comme livré"
+
+msgid "Change Password"
+msgstr "Changer le mot de passe"
+
+msgid "Start Delivery"
+msgstr "Commencer la livraison"

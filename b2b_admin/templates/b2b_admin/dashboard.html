@@ -1,0 +1,112 @@
+{% extends 'b2b_admin/base.html' %}
+{% load i18n %}
+
+{% block title %}Overview - B2B Logistics{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block nav_dashboard_class %}active{% endblock %}
+
+{% block content %}
+<!-- KPI Metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-5); margin-bottom: var(--space-8);">
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Total Orders</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_orders }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5); border-left: 4px solid var(--color-primary-500);">
+        <div class="text-xs font-bold text-primary-600 uppercase tracking-wider mb-2">Active Shipments</div>
+        <div class="text-4xl font-black text-primary-700">{{ active_shipments }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Total Clients</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_clients }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Managers</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_managers }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Drivers</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_drivers }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Warehouses</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_warehouses }}</div>
+    </div>
+    
+    <div class="ds-card" style="padding: var(--space-5);">
+        <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Products</div>
+        <div class="text-4xl font-black text-neutral-900">{{ total_products }}</div>
+    </div>
+</div>
+
+<!-- Driver Status Tables -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--space-6);">
+    
+    <div class="ds-card">
+        <div class="ds-card-header" style="display: flex; align-items: center; gap: var(--space-2);">
+            <div class="ds-badge ds-badge-success" style="padding: 0; width: 10px; height: 10px; border-radius: 50%;"></div>
+            <h3 class="ds-card-title m-0">Available Drivers</h3>
+        </div>
+        
+        <div class="ds-table-container">
+            <table class="ds-table">
+                <thead>
+                    <tr>
+                        <th>Driver Name</th>
+                        <th>Contact Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for driver in available_drivers %}
+                    <tr>
+                        <td class="font-semibold text-neutral-900">{{ driver.name }}</td>
+                        <td class="text-neutral-500">{{ driver.phone }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-neutral-400 py-6">No drivers available at the moment.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="ds-card">
+        <div class="ds-card-header" style="display: flex; align-items: center; gap: var(--space-2);">
+            <div class="ds-badge ds-badge-warning" style="padding: 0; width: 10px; height: 10px; border-radius: 50%;"></div>
+            <h3 class="ds-card-title m-0">Drivers On Duty</h3>
+        </div>
+        
+        <div class="ds-table-container">
+            <table class="ds-table">
+                <thead>
+                    <tr>
+                        <th>Driver Name</th>
+                        <th>Contact Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for driver in duty_drivers %}
+                    <tr>
+                        <td class="font-semibold text-neutral-900">{{ driver.name }}</td>
+                        <td class="text-neutral-500">{{ driver.phone }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-neutral-400 py-6">No drivers currently on duty.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

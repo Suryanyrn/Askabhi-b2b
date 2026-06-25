@@ -1,0 +1,155 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: or\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "ଆପଣଙ୍କର ବର୍ତ୍ତମାନ କ pending ଣସି ବିଚାରାଧୀନ ବିତରଣ ନାହିଁ | ଜୋରରେ ବସ!"
+
+msgid "Enter your password"
+msgstr "ଆପଣଙ୍କର ପାସୱାର୍ଡ ପ୍ରବେଶ କରନ୍ତୁ |"
+
+msgid "Mobile Number"
+msgstr "ମୋବାଇଲ୍ ନମ୍ବର |"
+
+msgid "Warehouse"
+msgstr "ଗୋଦାମ"
+
+msgid "Edit Profile"
+msgstr "ପ୍ରୋଫାଇଲ୍ ସଂପାଦନ କରନ୍ତୁ |"
+
+msgid "Password (Sent via SMS)"
+msgstr "ପାସୱାର୍ଡ (SMS ମାଧ୍ୟମରେ ପଠାଯାଇଛି)"
+
+msgid "Phone Number"
+msgstr "ଫୋନ୍ ନମ୍ବର |"
+
+msgid "IN TRANSIT"
+msgstr "ଗମନାଗମନରେ |"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr ""
+"ଜିପିଏସ୍ ଟ୍ରାକିଂ ସକ୍ଷମ କରିବାକୁ ଏବଂ କ୍ଲାଏଣ୍ଟକୁ ସୂଚିତ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ |"
+
+msgid "Destination Address"
+msgstr "ଗନ୍ତବ୍ୟସ୍ଥଳ ଠିକଣା"
+
+msgid "Orders"
+msgstr "ଆଦେଶ"
+
+msgid "New Delivery Assignment"
+msgstr "ନୂତନ ବିତରଣ କାର୍ଯ୍ୟ"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "ଡ୍ୟାସବୋର୍ଡ - B2B ଟ୍ରାକିଂ ପୋର୍ଟାଲ୍ |"
+
+msgid "Clients"
+msgstr "ଗ୍ରାହକ"
+
+msgid "Enter your phone number"
+msgstr "ଆପଣଙ୍କର ଫୋନ୍ ନମ୍ବର ପ୍ରବେଶ କରନ୍ତୁ |"
+
+msgid "Logout"
+msgstr "ଲଗଆଉଟ୍ |"
+
+msgid "Dashboard"
+msgstr "ଡ୍ୟାସବୋର୍ଡ |"
+
+msgid "Login to Dashboard"
+msgstr "ଡ୍ୟାସବୋର୍ଡକୁ ଲଗ୍ଇନ୍ କରନ୍ତୁ |"
+
+msgid "Driver App"
+msgstr "ଡ୍ରାଇଭର ଆପ୍ |"
+
+msgid "Welcome"
+msgstr "ସ୍ Welcome ାଗତ"
+
+msgid "No Active Shipments"
+msgstr "କ No ଣସି ସକ୍ରିୟ ପଠାଣ ନାହିଁ |"
+
+msgid "Cancel"
+msgstr "ବାତିଲ୍ କରନ୍ତୁ |"
+
+msgid "Delivery in Progress"
+msgstr "ପ୍ରଗତିରେ ବିତରଣ"
+
+msgid "Sign In"
+msgstr "ସାଇନ୍ ଇନ୍ କରନ୍ତୁ |"
+
+msgid "Proof of Delivery"
+msgstr "ବିତରଣର ପ୍ରମାଣ |"
+
+msgid "Enter registered mobile no."
+msgstr "ପଞ୍ଜୀକୃତ ମୋବାଇଲ୍ ନଂ ପ୍ରବେଶ କରନ୍ତୁ |"
+
+msgid "Inventory Logs"
+msgstr "ଭଣ୍ଡାର ଲଗ୍ |"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"ବିତରଣ ଯାଞ୍ଚ କରିବାକୁ ଦୟାକରି କ୍ଲାଏଣ୍ଟ ସ୍ ature ାକ୍ଷର କିମ୍ବା ଗୋଦାମ ସିଲର ଏକ "
+"ପ୍ରତିଛବି କ୍ୟାପଚର କରନ୍ତୁ |"
+
+msgid "Drivers"
+msgstr "ଡ୍ରାଇଭରଗୁଡ଼ିକ"
+
+msgid "Products"
+msgstr "ଉତ୍ପାଦଗୁଡିକ"
+
+msgid "Password"
+msgstr "ପାସୱାର୍ଡ"
+
+msgid "GPS Active"
+msgstr "GPS ସକ୍ରିୟ |"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "ଆପଣଙ୍କର ବିତରଣ କାର୍ଯ୍ୟଗୁଡିକ ଦେଖିବାକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ |"
+
+msgid "Previous Orders"
+msgstr "ପୂର୍ବ ଆଦେଶ"
+
+msgid "Audit Logs"
+msgstr "ଅଡିଟ୍ ଲଗ୍ |"
+
+msgid "Upload & Complete"
+msgstr "ଅପଲୋଡ୍ ଏବଂ ସଂପୂର୍ଣ୍ଣ କରନ୍ତୁ |"
+
+msgid "DISPATCHED"
+msgstr "ବିଭାଜିତ |"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr "ବିତରଣ କରିବାକୁ ଆପଣ ଲକ୍ଷ୍ୟସ୍ଥଳର 50 ମିଟର ମଧ୍ୟରେ ରହିବା ଜରୁରୀ |"
+
+msgid "Enter your temporary password"
+msgstr "ଆପଣଙ୍କର ଅସ୍ଥାୟୀ ପାସୱାର୍ଡ ପ୍ରବେଶ କରନ୍ତୁ |"
+
+msgid "Order"
+msgstr "ଅର୍ଡର |"
+
+msgid "Client"
+msgstr "ଗ୍ରାହକ"
+
+msgid "Managers"
+msgstr "ପରିଚାଳକଗଣ |"
+
+msgid "Shipments"
+msgstr "ପଠାଣ"
+
+msgid "Mark as Delivered"
+msgstr "ବିତରଣ ଭାବରେ ଚିହ୍ନିତ କରନ୍ତୁ |"
+
+msgid "Change Password"
+msgstr "ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ |"
+
+msgid "Start Delivery"
+msgstr "ବିତରଣ ଆରମ୍ଭ କରନ୍ତୁ |"

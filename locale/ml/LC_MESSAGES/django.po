@@ -1,0 +1,158 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: ml\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "നിങ്ങൾക്ക് നിലവിൽ ഡെലിവറികൾ തീർപ്പാക്കാനില്ല. ഇരിക്കൂ!"
+
+msgid "Enter your password"
+msgstr "നിങ്ങളുടെ പാസ്‌വേഡ് നൽകുക"
+
+msgid "Mobile Number"
+msgstr "മൊബൈൽ നമ്പർ"
+
+msgid "Warehouse"
+msgstr "വെയർഹൗസ്"
+
+msgid "Edit Profile"
+msgstr "പ്രൊഫൈൽ എഡിറ്റ് ചെയ്യുക"
+
+msgid "Password (Sent via SMS)"
+msgstr "പാസ്‌വേഡ് (എസ്എംഎസ് വഴി അയച്ചത്)"
+
+msgid "Phone Number"
+msgstr "ഫോൺ നമ്പർ"
+
+msgid "IN TRANSIT"
+msgstr "യാത്രയിൽ"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr ""
+"GPS ട്രാക്കിംഗ് പ്രവർത്തനക്ഷമമാക്കാനും ക്ലയൻ്റിനെ അറിയിക്കാനും ക്ലിക്ക് "
+"ചെയ്യുക."
+
+msgid "Destination Address"
+msgstr "ലക്ഷ്യസ്ഥാന വിലാസം"
+
+msgid "Orders"
+msgstr "ഉത്തരവുകൾ"
+
+msgid "New Delivery Assignment"
+msgstr "പുതിയ ഡെലിവറി അസൈൻമെൻ്റ്"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "ഡാഷ്ബോർഡ് - B2B ട്രാക്കിംഗ് പോർട്ടൽ"
+
+msgid "Clients"
+msgstr "ഉപഭോക്താക്കൾ"
+
+msgid "Enter your phone number"
+msgstr "നിങ്ങളുടെ ഫോൺ നമ്പർ നൽകുക"
+
+msgid "Logout"
+msgstr "പുറത്തുകടക്കുക"
+
+msgid "Dashboard"
+msgstr "ഡാഷ്ബോർഡ്"
+
+msgid "Login to Dashboard"
+msgstr "ഡാഷ്‌ബോർഡിലേക്ക് ലോഗിൻ ചെയ്യുക"
+
+msgid "Driver App"
+msgstr "ഡ്രൈവർ ആപ്പ്"
+
+msgid "Welcome"
+msgstr "സ്വാഗതം"
+
+msgid "No Active Shipments"
+msgstr "സജീവ ഷിപ്പ്‌മെൻ്റുകളൊന്നുമില്ല"
+
+msgid "Cancel"
+msgstr "റദ്ദാക്കുക"
+
+msgid "Delivery in Progress"
+msgstr "ഡെലിവറി പുരോഗമിക്കുന്നു"
+
+msgid "Sign In"
+msgstr "സൈൻ ഇൻ"
+
+msgid "Proof of Delivery"
+msgstr "ഡെലിവറി തെളിവ്"
+
+msgid "Enter registered mobile no."
+msgstr "രജിസ്റ്റർ ചെയ്ത മൊബൈൽ നമ്പർ നൽകുക."
+
+msgid "Inventory Logs"
+msgstr "ഇൻവെൻ്ററി ലോഗുകൾ"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"ഡെലിവറി സ്ഥിരീകരിക്കാൻ ക്ലയൻ്റ് ഒപ്പിൻ്റെയോ വെയർഹൗസ് സീലിൻ്റെയോ ഒരു ചിത്രം "
+"പകർത്തുക."
+
+msgid "Drivers"
+msgstr "ഡ്രൈവർമാർ"
+
+msgid "Products"
+msgstr "ഉൽപ്പന്നങ്ങൾ"
+
+msgid "Password"
+msgstr "രഹസ്യവാക്ക്"
+
+msgid "GPS Active"
+msgstr "ജിപിഎസ് സജീവമാണ്"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "നിങ്ങളുടെ ഡെലിവറി അസൈൻമെൻ്റുകൾ കാണാൻ സൈൻ ഇൻ ചെയ്യുക"
+
+msgid "Previous Orders"
+msgstr "മുൻ ഓർഡറുകൾ"
+
+msgid "Audit Logs"
+msgstr "ഓഡിറ്റ് ലോഗുകൾ"
+
+msgid "Upload & Complete"
+msgstr "അപ്‌ലോഡ് ചെയ്ത് പൂർത്തിയാക്കുക"
+
+msgid "DISPATCHED"
+msgstr "അയച്ചു"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"ഡെലിവർ ചെയ്‌തതായി അടയാളപ്പെടുത്താൻ നിങ്ങൾ ലക്ഷ്യസ്ഥാനത്തിൻ്റെ 50 "
+"മീറ്ററിനുള്ളിൽ ആയിരിക്കണം."
+
+msgid "Enter your temporary password"
+msgstr "നിങ്ങളുടെ താൽക്കാലിക പാസ്‌വേഡ് നൽകുക"
+
+msgid "Order"
+msgstr "ഓർഡർ ചെയ്യുക"
+
+msgid "Client"
+msgstr "ക്ലയൻ്റ്"
+
+msgid "Managers"
+msgstr "മാനേജർമാർ"
+
+msgid "Shipments"
+msgstr "കയറ്റുമതി"
+
+msgid "Mark as Delivered"
+msgstr "കൈമാറിയതായി അടയാളപ്പെടുത്തുക"
+
+msgid "Change Password"
+msgstr "പാസ്വേഡ് മാറ്റുക"
+
+msgid "Start Delivery"
+msgstr "ഡെലിവറി ആരംഭിക്കുക"

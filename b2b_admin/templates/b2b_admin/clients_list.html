@@ -1,0 +1,319 @@
+{% extends 'b2b_admin/base.html' %}
+
+{% block title %}Clients - B2B Logistics{% endblock %}
+{% block page_title %}Clients Overview{% endblock %}
+{% block nav_clients_class %}active{% endblock %}
+
+{% block content %}
+<div class="ds-card" style="margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: space-between; padding: var(--space-5);">
+    <h2 class="ds-card-title m-0">Total Clients</h2>
+    <div class="ds-badge ds-badge-primary" style="font-size: var(--font-size-lg); padding: var(--space-2) var(--space-4);">
+        {{ clients|length }}
+    </div>
+</div>
+
+<div class="ds-card">
+    <div class="ds-table-container">
+        <table class="ds-table">
+            <thead>
+                <tr>
+                    <th>Business Name</th>
+                    <th>Email Address</th>
+                    <th>Total Orders</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td class="font-bold text-neutral-900">{{ client.name }}</td>
+                    <td class="text-neutral-500">{{ client.email|default:"—" }}</td>
+                    <td>
+                        <span class="ds-badge ds-badge-primary">
+                            {{ client.total_orders }} Orders
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+                            <button class="btn btn-ghost btn-sm" 
+                                data-name="{{ client.name|escapejs }}"
+                                data-email="{{ client.email|escapejs }}"
+                                data-phone="{{ client.phone|escapejs }}"
+                                data-address="{{ client.address|escapejs }}"
+                                data-lat="{{ client.latitude }}"
+                                data-lng="{{ client.longitude }}"
+                                data-orders='[{% for order in client.orders.all %}{"id":"{{ order.id|escapejs }}","date":"{{ order.created_at|date:'M d, Y'|escapejs }}","status":"{{ order.status|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'
+                                onclick="viewProfile(this)">
+                                View Profile
+                            </button>
+                            <button class="btn-icon" onclick="openEditClientModal('{{ client.id }}', '{{ client.name|escapejs }}', '{{ client.email|escapejs }}', '{{ client.phone|escapejs }}', '{{ client.address|escapejs }}', '{{ client.latitude|default:0 }}', '{{ client.longitude|default:0 }}')" title="Edit Client">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-neutral-500 py-8">
+                        <div style="margin-bottom: var(--space-4);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-1">No clients found</h3>
+                        <p class="text-sm m-0">Clients are automatically created when generating orders.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Client Profile Modal -->
+<div id="profileModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal">
+        <div class="ds-modal-header">
+            <h2>Client Profile</h2>
+            <button class="btn-icon" onclick="closeProfileModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <div class="ds-modal-body" style="padding: 0;">
+            <div style="text-align: center; padding: var(--space-6) var(--space-6) var(--space-4); border-bottom: 1px solid var(--color-neutral-200); background: var(--surface-secondary);">
+                <div id="profAvatar" style="width: 80px; height: 80px; background: var(--color-primary-500); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; margin: 0 auto var(--space-4);">C</div>
+                <h3 id="profName" class="text-2xl font-bold text-neutral-900 m-0 mb-1">Client Name</h3>
+                <p id="profEmail" class="text-neutral-500 text-sm m-0">client@example.com</p>
+                <p id="profPhone" class="text-neutral-500 text-sm m-0 mt-1">+123456789</p>
+            </div>
+
+            <div style="padding: var(--space-5) var(--space-6);">
+                <h4 class="text-sm font-bold text-neutral-500 uppercase tracking-wide mb-3">Delivery Address</h4>
+                <div class="ds-card" style="padding: var(--space-4); background: var(--surface-secondary); margin-bottom: var(--space-6); border: none;">
+                    <span id="profAddress" class="text-neutral-800 text-sm block mb-2">123 Street</span>
+                    <a href="#" id="profMapLink" target="_blank" class="text-primary-600 text-sm font-medium hover:underline flex items-center gap-1" style="display: inline-flex; align-items: center; gap: var(--space-1); text-decoration: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        Open in Maps
+                    </a>
+                </div>
+                
+                <h4 class="text-sm font-bold text-neutral-500 uppercase tracking-wide mb-3">Recent Order History</h4>
+                <div id="profOrdersList" style="max-height: 240px; overflow-y: auto;">
+                    <!-- Orders populated via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Client Modal -->
+<div id="editClientModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal">
+        <div class="ds-modal-header">
+            <h2>Edit Client</h2>
+            <button class="btn-icon" onclick="closeEditClientModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="editClientForm">
+            <div class="ds-modal-body">
+                <input type="hidden" name="client_id" id="edit_client_id">
+                
+                <div class="form-group">
+                    <label class="form-label">Business Name</label>
+                    <input type="text" name="name" id="edit_client_name" class="form-input" required maxlength="100">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" id="edit_client_email" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" id="edit_client_phone" class="form-input" pattern="^\d{10,15}$">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Delivery Address</label>
+                    <input type="text" name="address" id="edit_client_address" class="form-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Latitude</label>
+                        <input type="text" name="latitude" id="edit_client_lat" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Longitude</label>
+                        <input type="text" name="longitude" id="edit_client_lng" class="form-input">
+                    </div>
+                </div>
+
+                <div id="editClientAlert" class="ds-alert hidden"></div>
+            </div>
+
+            <div class="ds-modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-ghost" style="color: var(--color-error-600);" onclick="deleteClient()">Delete Client</button>
+                <div>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditClientModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function viewProfile(btn) {
+        const name = btn.getAttribute('data-name');
+        const email = btn.getAttribute('data-email');
+        const phone = btn.getAttribute('data-phone');
+        const address = btn.getAttribute('data-address');
+        const lat = btn.getAttribute('data-lat');
+        const lng = btn.getAttribute('data-lng');
+        const ordersRaw = btn.getAttribute('data-orders');
+        let orders = [];
+        try { orders = JSON.parse(ordersRaw); } catch(e) {}
+
+        document.getElementById('profName').innerText = name;
+        document.getElementById('profAvatar').innerText = name.charAt(0).toUpperCase();
+        document.getElementById('profEmail').innerText = email || 'No email provided';
+        document.getElementById('profPhone').innerText = phone || 'No phone provided';
+        document.getElementById('profAddress').innerText = address || 'No address provided';
+
+        const mapLink = document.getElementById('profMapLink');
+        if (lat && lng && lat !== 'None' && lng !== 'None') {
+            mapLink.style.display = 'inline-flex';
+            mapLink.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        } else {
+            mapLink.style.display = 'none';
+        }
+
+        const ordersList = document.getElementById('profOrdersList');
+        ordersList.innerHTML = '';
+        if (orders.length === 0) {
+            ordersList.innerHTML = '<p class="text-neutral-400 text-sm text-center py-4">No order history found.</p>';
+        } else {
+            orders.forEach(order => {
+                const item = document.createElement('div');
+                item.className = 'ds-card';
+                item.style.padding = 'var(--space-3) var(--space-4)';
+                item.style.marginBottom = 'var(--space-2)';
+                item.style.display = 'flex';
+                item.style.justifyContent = 'space-between';
+                item.style.alignItems = 'center';
+                
+                let badgeClass = order.status === 'DELIVERED' ? 'ds-badge-success' : (order.status === 'PLACED' ? 'ds-badge-warning' : 'ds-badge-primary');
+                
+                item.innerHTML = `
+                    <div>
+                        <div class="font-bold text-sm text-neutral-900">Order #${order.id.slice(0,8)}</div>
+                        <div class="text-xs text-neutral-500 mt-1">${order.date}</div>
+                    </div>
+                    <div class="ds-badge ${badgeClass} text-xs">
+                        ${order.status}
+                    </div>
+                `;
+                ordersList.appendChild(item);
+            });
+        }
+
+        document.getElementById('profileModal').classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+        document.getElementById('profileModal').classList.add('hidden');
+    }
+
+    // Edit Client Logic
+    function openEditClientModal(id, name, email, phone, address, lat, lng) {
+        document.getElementById('edit_client_id').value = id;
+        document.getElementById('edit_client_name').value = name;
+        document.getElementById('edit_client_email').value = email;
+        document.getElementById('edit_client_phone').value = phone;
+        document.getElementById('edit_client_address').value = address;
+        document.getElementById('edit_client_lat').value = lat;
+        document.getElementById('edit_client_lng').value = lng;
+        
+        document.getElementById('editClientAlert').classList.add('hidden');
+        document.getElementById('editClientModal').classList.remove('hidden');
+    }
+
+    function closeEditClientModal() {
+        document.getElementById('editClientModal').classList.add('hidden');
+    }
+
+    document.getElementById('editClientForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (this.dataset.submitting) return;
+        this.dataset.submitting = 'true';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        const alertBox = document.getElementById('editClientAlert');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        
+        alertBox.className = 'ds-alert hidden';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Saving...';
+        
+        fetch("{% url 'api_update_client' %}", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(data)
+        }).then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden');
+            if (res.status === 200) {
+                alertBox.classList.add('ds-alert-success');
+                alertBox.innerText = res.body.message;
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Save Changes';
+                delete this.dataset.submitting;
+            }
+        }).catch(() => {
+            alertBox.classList.remove('hidden');
+            alertBox.classList.add('ds-alert-error');
+            alertBox.innerText = 'Network error. Please try again.';
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Save Changes';
+            delete this.dataset.submitting;
+        });
+    });
+
+    function deleteClient() {
+        if(!confirm("Are you sure you want to delete this Client? This action cannot be undone.")) return;
+        
+        const id = document.getElementById('edit_client_id').value;
+        const alertBox = document.getElementById('editClientAlert');
+        
+        fetch("{% url 'api_delete_client' %}", {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({client_id: id})
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            alertBox.classList.remove('hidden', 'ds-alert-success', 'ds-alert-error');
+            if (res.status === 200) {
+                window.location.reload();
+            } else {
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'b2b_admin/base.html' %}
+{% load static %}
+
+{% block title %}Inventory Logs - B2B Logistics{% endblock %}
+{% block page_title %}Inventory Logs{% endblock %}
+{% block nav_inv_logs_class %}active{% endblock %}
+
+{% block content %}
+<div class="ds-card" style="margin-bottom: var(--space-6); padding: var(--space-5);">
+    <h2 class="ds-card-title m-0">Inventory Activity</h2>
+    <p class="text-neutral-500 m-0 text-sm">A log of all stock additions and deductions across your warehouses.</p>
+</div>
+
+<div class="ds-card" style="margin-bottom: var(--space-6); padding: var(--space-4);">
+    <form method="GET" style="display: flex; gap: var(--space-4); align-items: flex-end; flex-wrap: wrap; margin: 0;">
+        <div class="form-group m-0" style="flex: 1; min-width: 200px;">
+            <label class="form-label text-xs">From Date</label>
+            <input type="date" name="start_date" class="form-input m-0" value="{{ start_date|default:'' }}">
+        </div>
+        <div class="form-group m-0" style="flex: 1; min-width: 200px;">
+            <label class="form-label text-xs">To Date</label>
+            <input type="date" name="end_date" class="form-input m-0" value="{{ end_date|default:'' }}">
+        </div>
+        <div class="form-group m-0" style="flex: 1; min-width: 150px;">
+            <label class="form-label text-xs">Show entries</label>
+            <select name="per_page" class="form-input m-0">
+                <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                <option value="15" {% if per_page == 15 %}selected{% endif %}>15</option>
+                <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+                <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+            </select>
+        </div>
+        <div style="flex-shrink: 0;">
+            <button type="submit" class="btn btn-primary" style="height: 42px;">Filter Logs</button>
+        </div>
+    </form>
+</div>
+
+<div class="ds-card">
+    <div class="ds-table-container">
+        <table class="ds-table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>User Name</th>
+                    <th>Product</th>
+                    <th>Warehouse</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in page_obj %}
+                <tr>
+                    <td class="text-sm text-neutral-500 whitespace-nowrap">{{ log.timestamp|date:"M d, Y - H:i" }}</td>
+                    <td class="font-bold text-neutral-900">{{ log.user_name }}</td>
+                    <td class="text-neutral-700 font-medium">{{ log.product_name }}</td>
+                    <td class="text-primary-600 font-medium">{{ log.warehouse_name }}</td>
+                    <td>
+                        {% if 'deduct' in log.action|lower %}
+                            <span class="ds-badge ds-badge-error font-bold">{{ log.action }}</span>
+                        {% elif 'add' in log.action|lower %}
+                            <span class="ds-badge ds-badge-success font-bold">{{ log.action }}</span>
+                        {% else %}
+                            <span class="ds-badge ds-badge-neutral font-bold">{{ log.action }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-neutral-500 py-8">
+                        <div style="margin-bottom: var(--space-4);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-1">No inventory activity</h3>
+                        <p class="text-sm m-0">There are no inventory logs for the selected date range.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if page_obj.has_other_pages %}
+    <div style="padding: var(--space-4) var(--space-5); border-top: 1px solid var(--color-neutral-200); display: flex; justify-content: center; gap: var(--space-2);">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}&per_page={{ per_page }}" class="btn btn-secondary btn-sm">Previous</a>
+        {% endif %}
+        
+        <span class="btn btn-primary btn-sm" style="pointer-events: none;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}&per_page={{ per_page }}" class="btn btn-secondary btn-sm">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

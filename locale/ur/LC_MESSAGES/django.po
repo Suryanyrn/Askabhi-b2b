@@ -1,0 +1,155 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: ur\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "آپ کے پاس فی الحال کوئی زیر التواء ڈیلیوری نہیں ہے۔ چپ کر بیٹھو!"
+
+msgid "Enter your password"
+msgstr "اپنا پاس ورڈ درج کریں۔"
+
+msgid "Mobile Number"
+msgstr "موبائل نمبر"
+
+msgid "Warehouse"
+msgstr "گودام"
+
+msgid "Edit Profile"
+msgstr "پروفائل میں ترمیم کریں۔"
+
+msgid "Password (Sent via SMS)"
+msgstr "پاس ورڈ (ایس ایم ایس کے ذریعے بھیجا گیا)"
+
+msgid "Phone Number"
+msgstr "فون نمبر"
+
+msgid "IN TRANSIT"
+msgstr "ٹرانزٹ میں"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "GPS ٹریکنگ کو فعال کرنے اور کلائنٹ کو مطلع کرنے کے لیے کلک کریں۔"
+
+msgid "Destination Address"
+msgstr "منزل کا پتہ"
+
+msgid "Orders"
+msgstr "احکامات"
+
+msgid "New Delivery Assignment"
+msgstr "نئی ڈیلیوری اسائنمنٹ"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "ڈیش بورڈ - B2B ٹریکنگ پورٹل"
+
+msgid "Clients"
+msgstr "کلائنٹس"
+
+msgid "Enter your phone number"
+msgstr "اپنا فون نمبر درج کریں۔"
+
+msgid "Logout"
+msgstr "لاگ آؤٹ"
+
+msgid "Dashboard"
+msgstr "ڈیش بورڈ"
+
+msgid "Login to Dashboard"
+msgstr "ڈیش بورڈ میں لاگ ان کریں۔"
+
+msgid "Driver App"
+msgstr "ڈرائیور ایپ"
+
+msgid "Welcome"
+msgstr "خوش آمدید"
+
+msgid "No Active Shipments"
+msgstr "کوئی فعال ترسیل نہیں"
+
+msgid "Cancel"
+msgstr "منسوخ کریں۔"
+
+msgid "Delivery in Progress"
+msgstr "ڈیلیوری جاری ہے۔"
+
+msgid "Sign In"
+msgstr "سائن ان کریں۔"
+
+msgid "Proof of Delivery"
+msgstr "ڈیلیوری کا ثبوت"
+
+msgid "Enter registered mobile no."
+msgstr "رجسٹرڈ موبائل نمبر درج کریں۔"
+
+msgid "Inventory Logs"
+msgstr "انوینٹری لاگز"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"ڈیلیوری کی تصدیق کے لیے براہ کرم کلائنٹ کے دستخط یا گودام کی مہر کی تصویر "
+"کھینچیں۔"
+
+msgid "Drivers"
+msgstr "ڈرائیورز"
+
+msgid "Products"
+msgstr "مصنوعات"
+
+msgid "Password"
+msgstr "پاس ورڈ"
+
+msgid "GPS Active"
+msgstr "GPS فعال"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "اپنی ڈیلیوری اسائنمنٹس دیکھنے کے لیے سائن ان کریں۔"
+
+msgid "Previous Orders"
+msgstr "پچھلے احکامات"
+
+msgid "Audit Logs"
+msgstr "آڈٹ لاگز"
+
+msgid "Upload & Complete"
+msgstr "اپ لوڈ کریں اور مکمل کریں۔"
+
+msgid "DISPATCHED"
+msgstr "بھیج دیا گیا۔"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"ڈیلیوری کو نشان زد کرنے کے لیے آپ کو منزل کے 50 میٹر کے اندر ہونا چاہیے۔"
+
+msgid "Enter your temporary password"
+msgstr "اپنا عارضی پاس ورڈ درج کریں۔"
+
+msgid "Order"
+msgstr "آرڈر"
+
+msgid "Client"
+msgstr "کلائنٹ"
+
+msgid "Managers"
+msgstr "مینیجرز"
+
+msgid "Shipments"
+msgstr "شپمنٹس"
+
+msgid "Mark as Delivered"
+msgstr "ڈیلیور کے بطور نشان زد کریں۔"
+
+msgid "Change Password"
+msgstr "پاس ورڈ تبدیل کریں۔"
+
+msgid "Start Delivery"
+msgstr "ڈیلیوری شروع کریں۔"

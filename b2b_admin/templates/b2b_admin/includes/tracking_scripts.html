@@ -1,0 +1,210 @@
+<script>
+    let trackMap = null;
+    let truckMarker = null;
+    let destMarker = null;
+    let polyline = null;
+    let activeSocket = null;
+    let simInterval = null;
+
+    const truckIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2765/2765042.png',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+    });
+
+    const destIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/149/149059.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
+    });
+
+    function formatDistanceKm(meters) {
+        if (meters >= 1000) {
+            return (meters / 1000).toFixed(1) + ' km';
+        }
+        return Math.round(meters) + ' m';
+    }
+
+    function formatEtaIST(minutes) {
+        if (minutes === null || minutes === undefined) return '--';
+        const now = new Date();
+        const eta = new Date(now.getTime() + minutes * 60000);
+        return eta.toLocaleString('en-IN', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }) + ' IST';
+    }
+
+    function formatDuration(minutes) {
+        if (minutes === null || minutes === undefined) return '--';
+        if (minutes < 60) return minutes + ' min';
+        const hrs = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return hrs + 'h ' + mins + 'm';
+    }
+
+    function openTrackingModal(btn) {
+        const shipmentId = btn.getAttribute('data-id');
+        const driverName = btn.getAttribute('data-driver');
+        const driverPhone = btn.getAttribute('data-phone');
+        const orderNum = btn.getAttribute('data-order');
+        const clientName = btn.getAttribute('data-client');
+        const destination = btn.getAttribute('data-destination');
+        const eta = btn.getAttribute('data-eta');
+        const vehicleInfo = btn.getAttribute('data-vehicle') || '--';
+        let duration = btn.getAttribute('data-duration');
+        
+        if (duration && duration !== '--') {
+            const mins = Math.round(parseInt(duration) / 60);
+            duration = formatDuration(mins);
+        }
+        
+        const routeScript = document.getElementById('route-' + shipmentId);
+        let routeJson = [];
+        if (routeScript) {
+            try {
+                routeJson = JSON.parse(routeScript.textContent || "[]");
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('trackDriverInfo').innerText = `Driver: ${driverName} (${driverPhone})`;
+        document.getElementById('trackOrderNum').innerText = orderNum || '--';
+        document.getElementById('trackClientName').innerText = clientName || '--';
+        document.getElementById('trackDestination').innerText = destination || '--';
+        document.getElementById('trackETA').innerText = eta || '--';
+        document.getElementById('trackDuration').innerText = duration || '--';
+        document.getElementById('trackDriverPhone').innerText = driverPhone || '--';
+        document.getElementById('trackVehicleInfo').innerText = vehicleInfo || '--';
+        document.getElementById('trackDistance').innerText = '--';
+        document.getElementById('trackSpeed').innerText = '--';
+
+        document.getElementById('trackingModal').classList.remove('hidden');
+
+        if (!routeJson || routeJson.length === 0) return;
+
+        // Initialize Map
+        if (!trackMap) {
+            trackMap = L.map('trackMap').setView(routeJson[0], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(trackMap);
+        } else {
+            // Clean up old layers
+            if (polyline) trackMap.removeLayer(polyline);
+            if (truckMarker) trackMap.removeLayer(truckMarker);
+            if (destMarker) trackMap.removeLayer(destMarker);
+        }
+
+        // Draw Route
+        polyline = L.polyline(routeJson, {color: '#3b82f6', weight: 5, opacity: 0.7}).addTo(trackMap);
+        trackMap.fitBounds(polyline.getBounds());
+
+        // Place Markers
+        destMarker = L.marker(routeJson[routeJson.length - 1], {icon: destIcon}).addTo(trackMap).bindPopup("Destination");
+        truckMarker = L.marker(routeJson[0], {icon: truckIcon}).addTo(trackMap).bindPopup("Truck");
+
+        setTimeout(() => { trackMap.invalidateSize(); trackMap.fitBounds(polyline.getBounds()); }, 200);
+
+        // Start WebSocket & Sim
+        startTracking(shipmentId, routeJson);
+    }
+
+    function closeTrackingModal() {
+        document.getElementById('trackingModal').classList.add('hidden');
+        
+        if (activeSocket) {
+            activeSocket.close();
+        }
+        if (simInterval) {
+            clearInterval(simInterval);
+        }
+    }
+
+    function startTracking(shipmentId, routeJson) {
+        if (activeSocket) activeSocket.close();
+        if (simInterval) clearInterval(simInterval);
+
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws/tracking/${shipmentId}/`;
+        activeSocket = new WebSocket(wsUrl);
+        
+        activeSocket.onmessage = function(event) {
+            const payload = JSON.parse(event.data);
+            if (payload.type === 'location_update') {
+                const data = payload.data;
+                const lat = data.lat;
+                const lng = data.lng;
+                
+                truckMarker.setLatLng([lat, lng]);
+                
+                // Update live telemetry
+                if (data.distance_remaining_m !== undefined) {
+                    document.getElementById('trackDistance').innerText = formatDistanceKm(data.distance_remaining_m);
+                }
+                if (data.speed_kmh !== undefined && data.speed_kmh > 0) {
+                    document.getElementById('trackSpeed').innerText = data.speed_kmh + ' km/h';
+                }
+                if (data.eta_minutes !== undefined && data.eta_minutes !== null) {
+                    document.getElementById('trackETA').innerText = formatEtaIST(data.eta_minutes);
+                    document.getElementById('trackDuration').innerText = formatDuration(data.eta_minutes);
+                }
+            }
+        };
+
+        // DRIVER SIMULATION ENGINE
+        let currentStep = 0;
+        simInterval = setInterval(() => {
+            if (activeSocket.readyState === WebSocket.OPEN && currentStep < routeJson.length) {
+                const coord = routeJson[currentStep];
+                activeSocket.send(JSON.stringify({ lat: coord[0], lng: coord[1] }));
+                currentStep += 1;
+            }
+        }, 1000);
+    }
+    // POD Review Modal Logic
+    function openReviewModal(btn) {
+        document.getElementById('revShipmentId').value = btn.getAttribute('data-id');
+        document.getElementById('revOrderNum').innerText = btn.getAttribute('data-order');
+        document.getElementById('revDriverName').innerText = btn.getAttribute('data-driver');
+        document.getElementById('revProofImg').src = btn.getAttribute('data-proof');
+        document.getElementById('reviewPodModal').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+        document.getElementById('reviewPodModal').classList.add('hidden');
+    }
+
+    function submitPodReview(action, btn) {
+        const shipmentId = document.getElementById('revShipmentId').value;
+        btn.disabled = true;
+        const originalText = btn.innerHTML; // Using innerHTML handles child SVGs properly
+        btn.innerHTML = '<span class="ds-spinner"></span> Processing...';
+
+        fetch("{% url 'api_approve_delivery' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                shipment_id: shipmentId,
+                action: action
+            })
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            if (res.status === 200) {
+                alert(res.body.message);
+                window.location.reload();
+            } else {
+                alert(res.body.error || 'Failed to update delivery status.');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,157 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "Şu anda bekleyen teslimatınız yok. Sıkı oturun!"
+
+msgid "Enter your password"
+msgstr "Şifrenizi girin"
+
+msgid "Mobile Number"
+msgstr "Cep numarası"
+
+msgid "Warehouse"
+msgstr "Depo"
+
+msgid "Edit Profile"
+msgstr "Profili Düzenle"
+
+msgid "Password (Sent via SMS)"
+msgstr "Şifre (SMS ile gönderilir)"
+
+msgid "Phone Number"
+msgstr "Telefon Numarası"
+
+msgid "IN TRANSIT"
+msgstr "TRANSİT OLARAK"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr ""
+"GPS takibini etkinleştirmek ve müşteriye bildirimde bulunmak için tıklayın."
+
+msgid "Destination Address"
+msgstr "Hedef Adres"
+
+msgid "Orders"
+msgstr "Siparişler"
+
+msgid "New Delivery Assignment"
+msgstr "Yeni Teslimat Ataması"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "Kontrol Paneli - B2B Takip Portalı"
+
+msgid "Clients"
+msgstr "Müşteriler"
+
+msgid "Enter your phone number"
+msgstr "Telefon numaranızı girin"
+
+msgid "Logout"
+msgstr "Oturumu kapat"
+
+msgid "Dashboard"
+msgstr "Kontrol Paneli"
+
+msgid "Login to Dashboard"
+msgstr "Kontrol Paneline Giriş Yapın"
+
+msgid "Driver App"
+msgstr "Sürücü Uygulaması"
+
+msgid "Welcome"
+msgstr "Hoş geldin"
+
+msgid "No Active Shipments"
+msgstr "Aktif Gönderi Yok"
+
+msgid "Cancel"
+msgstr "İptal etmek"
+
+msgid "Delivery in Progress"
+msgstr "Teslimat Devam Ediyor"
+
+msgid "Sign In"
+msgstr "Oturum aç"
+
+msgid "Proof of Delivery"
+msgstr "Teslimat Kanıtı"
+
+msgid "Enter registered mobile no."
+msgstr "Kayıtlı cep telefonu numarasını girin."
+
+msgid "Inventory Logs"
+msgstr "Envanter Günlükleri"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"Teslimatı doğrulamak için lütfen müşteri imzasının veya depo mührünün "
+"resmini çekin."
+
+msgid "Drivers"
+msgstr "Sürücüler"
+
+msgid "Products"
+msgstr "Ürünler"
+
+msgid "Password"
+msgstr "Şifre"
+
+msgid "GPS Active"
+msgstr "GPS Aktif"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "Teslimat görevlerinizi görüntülemek için oturum açın"
+
+msgid "Previous Orders"
+msgstr "Önceki Siparişler"
+
+msgid "Audit Logs"
+msgstr "Denetim Günlükleri"
+
+msgid "Upload & Complete"
+msgstr "Yükle ve Tamamla"
+
+msgid "DISPATCHED"
+msgstr "SEVK EDİLEN"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"Teslim edildi olarak işaretlemek için varış noktasına 50 metre mesafede "
+"olmanız gerekir."
+
+msgid "Enter your temporary password"
+msgstr "Geçici şifrenizi girin"
+
+msgid "Order"
+msgstr "Emir"
+
+msgid "Client"
+msgstr "Müşteri"
+
+msgid "Managers"
+msgstr "Yöneticiler"
+
+msgid "Shipments"
+msgstr "Gönderiler"
+
+msgid "Mark as Delivered"
+msgstr "Teslim Edildi Olarak İşaretle"
+
+msgid "Change Password"
+msgstr "Şifre değiştir"
+
+msgid "Start Delivery"
+msgstr "Teslimatı Başlat"

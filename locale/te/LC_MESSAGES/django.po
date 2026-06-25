@@ -1,0 +1,158 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: te\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "మీకు ప్రస్తుతం పెండింగ్ డెలివరీలు లేవు. గట్టిగా కూర్చోండి!"
+
+msgid "Enter your password"
+msgstr "మీ పాస్‌వర్డ్‌ని నమోదు చేయండి"
+
+msgid "Mobile Number"
+msgstr "మొబైల్ నంబర్"
+
+msgid "Warehouse"
+msgstr "గిడ్డంగి"
+
+msgid "Edit Profile"
+msgstr "ప్రొఫైల్‌ని సవరించండి"
+
+msgid "Password (Sent via SMS)"
+msgstr "పాస్‌వర్డ్ (SMS ద్వారా పంపబడింది)"
+
+msgid "Phone Number"
+msgstr "ఫోన్ నంబర్"
+
+msgid "IN TRANSIT"
+msgstr "రవాణాలో"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr ""
+"GPS ట్రాకింగ్‌ని ప్రారంభించడానికి క్లిక్ చేయండి మరియు క్లయింట్‌కు "
+"తెలియజేయండి."
+
+msgid "Destination Address"
+msgstr "గమ్యం చిరునామా"
+
+msgid "Orders"
+msgstr "ఆర్డర్లు"
+
+msgid "New Delivery Assignment"
+msgstr "కొత్త డెలివరీ అసైన్‌మెంట్"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "డాష్‌బోర్డ్ - B2B ట్రాకింగ్ పోర్టల్"
+
+msgid "Clients"
+msgstr "క్లయింట్లు"
+
+msgid "Enter your phone number"
+msgstr "మీ ఫోన్ నంబర్‌ను నమోదు చేయండి"
+
+msgid "Logout"
+msgstr "లాగ్అవుట్"
+
+msgid "Dashboard"
+msgstr "డాష్‌బోర్డ్"
+
+msgid "Login to Dashboard"
+msgstr "డాష్‌బోర్డ్‌కు లాగిన్ చేయండి"
+
+msgid "Driver App"
+msgstr "డ్రైవర్ యాప్"
+
+msgid "Welcome"
+msgstr "స్వాగతం"
+
+msgid "No Active Shipments"
+msgstr "యాక్టివ్ షిప్‌మెంట్‌లు లేవు"
+
+msgid "Cancel"
+msgstr "రద్దు చేయి"
+
+msgid "Delivery in Progress"
+msgstr "డెలివరీ ప్రోగ్రెస్‌లో ఉంది"
+
+msgid "Sign In"
+msgstr "సైన్ ఇన్ చేయండి"
+
+msgid "Proof of Delivery"
+msgstr "డెలివరీ రుజువు"
+
+msgid "Enter registered mobile no."
+msgstr "రిజిస్టర్డ్ మొబైల్ నంబర్‌ను నమోదు చేయండి."
+
+msgid "Inventory Logs"
+msgstr "ఇన్వెంటరీ లాగ్‌లు"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"డెలివరీని ధృవీకరించడానికి దయచేసి క్లయింట్ సంతకం లేదా గిడ్డంగి సీల్ యొక్క "
+"చిత్రాన్ని క్యాప్చర్ చేయండి."
+
+msgid "Drivers"
+msgstr "డ్రైవర్లు"
+
+msgid "Products"
+msgstr "ఉత్పత్తులు"
+
+msgid "Password"
+msgstr "పాస్వర్డ్"
+
+msgid "GPS Active"
+msgstr "GPS యాక్టివ్"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "మీ డెలివరీ అసైన్‌మెంట్‌లను వీక్షించడానికి సైన్ ఇన్ చేయండి"
+
+msgid "Previous Orders"
+msgstr "మునుపటి ఆర్డర్‌లు"
+
+msgid "Audit Logs"
+msgstr "ఆడిట్ లాగ్‌లు"
+
+msgid "Upload & Complete"
+msgstr "అప్‌లోడ్ చేసి పూర్తి చేయండి"
+
+msgid "DISPATCHED"
+msgstr "పంపబడింది"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"డెలివరీ అయినట్లు గుర్తించడానికి మీరు తప్పనిసరిగా గమ్యస్థానానికి 50 మీటర్ల "
+"దూరంలో ఉండాలి."
+
+msgid "Enter your temporary password"
+msgstr "మీ తాత్కాలిక పాస్‌వర్డ్‌ను నమోదు చేయండి"
+
+msgid "Order"
+msgstr "ఆర్డర్ చేయండి"
+
+msgid "Client"
+msgstr "క్లయింట్"
+
+msgid "Managers"
+msgstr "నిర్వాహకులు"
+
+msgid "Shipments"
+msgstr "సరుకులు"
+
+msgid "Mark as Delivered"
+msgstr "డెలివరీ అయినట్లు గుర్తు పెట్టండి"
+
+msgid "Change Password"
+msgstr "పాస్‌వర్డ్ మార్చండి"
+
+msgid "Start Delivery"
+msgstr "డెలివరీని ప్రారంభించండి"

@@ -1,0 +1,159 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr ""
+"உங்களிடம் தற்போது டெலிவரிகள் எதுவும் நிலுவையில் இல்லை. இறுக்கமாக "
+"உட்காருங்கள்!"
+
+msgid "Enter your password"
+msgstr "உங்கள் கடவுச்சொல்லை உள்ளிடவும்"
+
+msgid "Mobile Number"
+msgstr "மொபைல் எண்"
+
+msgid "Warehouse"
+msgstr "கிடங்கு"
+
+msgid "Edit Profile"
+msgstr "சுயவிவரத்தைத் திருத்து"
+
+msgid "Password (Sent via SMS)"
+msgstr "கடவுச்சொல் (எஸ்எம்எஸ் மூலம் அனுப்பப்பட்டது)"
+
+msgid "Phone Number"
+msgstr "தொலைபேசி எண்"
+
+msgid "IN TRANSIT"
+msgstr "போக்குவரத்தில்"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr ""
+"ஜிபிஎஸ் கண்காணிப்பை இயக்க கிளிக் செய்து வாடிக்கையாளருக்கு தெரிவிக்கவும்."
+
+msgid "Destination Address"
+msgstr "சேருமிட முகவரி"
+
+msgid "Orders"
+msgstr "ஆர்டர்கள்"
+
+msgid "New Delivery Assignment"
+msgstr "புதிய டெலிவரி பணி"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "டாஷ்போர்டு - B2B டிராக்கிங் போர்டல்"
+
+msgid "Clients"
+msgstr "வாடிக்கையாளர்கள்"
+
+msgid "Enter your phone number"
+msgstr "உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்"
+
+msgid "Logout"
+msgstr "வெளியேறு"
+
+msgid "Dashboard"
+msgstr "டாஷ்போர்டு"
+
+msgid "Login to Dashboard"
+msgstr "டாஷ்போர்டில் உள்நுழைக"
+
+msgid "Driver App"
+msgstr "டிரைவர் ஆப்"
+
+msgid "Welcome"
+msgstr "வரவேற்கிறோம்"
+
+msgid "No Active Shipments"
+msgstr "செயலில் உள்ள ஏற்றுமதிகள் இல்லை"
+
+msgid "Cancel"
+msgstr "ரத்து செய்"
+
+msgid "Delivery in Progress"
+msgstr "விநியோகம் நடைபெறுகிறது"
+
+msgid "Sign In"
+msgstr "உள்நுழையவும்"
+
+msgid "Proof of Delivery"
+msgstr "டெலிவரிக்கான சான்று"
+
+msgid "Enter registered mobile no."
+msgstr "பதிவு செய்யப்பட்ட மொபைல் எண்ணை உள்ளிடவும்."
+
+msgid "Inventory Logs"
+msgstr "சரக்கு பதிவுகள்"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"டெலிவரியைச் சரிபார்க்க, கிளையன்ட் கையொப்பம் அல்லது கிடங்கு முத்திரையின் "
+"படத்தைப் பிடிக்கவும்."
+
+msgid "Drivers"
+msgstr "ஓட்டுனர்கள்"
+
+msgid "Products"
+msgstr "தயாரிப்புகள்"
+
+msgid "Password"
+msgstr "கடவுச்சொல்"
+
+msgid "GPS Active"
+msgstr "ஜிபிஎஸ் செயலில் உள்ளது"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "உங்கள் டெலிவரி பணிகளைப் பார்க்க உள்நுழையவும்"
+
+msgid "Previous Orders"
+msgstr "முந்தைய ஆர்டர்கள்"
+
+msgid "Audit Logs"
+msgstr "தணிக்கை பதிவுகள்"
+
+msgid "Upload & Complete"
+msgstr "பதிவேற்றம் செய்து முடிக்கவும்"
+
+msgid "DISPATCHED"
+msgstr "அனுப்பப்பட்டது"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"டெலிவரி செய்யப்பட்டதாகக் குறிக்க, சேருமிடத்திலிருந்து 50 மீட்டருக்குள் "
+"இருக்க வேண்டும்."
+
+msgid "Enter your temporary password"
+msgstr "உங்கள் தற்காலிக கடவுச்சொல்லை உள்ளிடவும்"
+
+msgid "Order"
+msgstr "ஆர்டர்"
+
+msgid "Client"
+msgstr "வாடிக்கையாளர்"
+
+msgid "Managers"
+msgstr "மேலாளர்கள்"
+
+msgid "Shipments"
+msgstr "ஏற்றுமதி"
+
+msgid "Mark as Delivered"
+msgstr "வழங்கப்பட்டதாகக் குறிக்கவும்"
+
+msgid "Change Password"
+msgstr "கடவுச்சொல்லை மாற்றவும்"
+
+msgid "Start Delivery"
+msgstr "விநியோகத்தைத் தொடங்கவும்"

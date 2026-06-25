@@ -1,0 +1,806 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% trans "Dashboard - B2B Tracking Portal" %}{% endblock %}</title>
+    
+    <!-- Design System (Foundation) -->
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+    
+    <!-- Shared Portal CSS (Auth/Onboarding) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Admin Dashboard Layout CSS -->
+    <link rel="stylesheet" href="{% static 'b2b_admin/css/admin_style.css' %}">
+    
+    <!-- Leaflet CSS (Global for Maps) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-dashboard">
+
+    <div class="app-container">
+        
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'dashboard_home' %}" class="company-logo">
+                    <div class="company-logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <span class="nav-link-text">
+                        {% if role == 'MANAGER' %}
+                            {{ user.manager.name|default:user.email|title }}
+                        {% else %}
+                            {{ user.company.company_name|default:user.email|title }}
+                        {% endif %}
+                    </span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Overview</div>
+                
+                <a href="{% url 'dashboard_home' %}" class="nav-link {% block nav_dashboard_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span class="nav-link-text">{% trans "Dashboard" %}</span>
+                </a>
+                
+                <div class="nav-section-title">Operations</div>
+                
+                <a href="{% url 'orders_list' %}" class="nav-link {% block nav_orders_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span class="nav-link-text">{% trans "Orders" %}</span>
+                </a>
+                
+                <a href="{% url 'shipments_list' %}" class="nav-link {% block nav_shipments_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                    <span class="nav-link-text">{% trans "Live Shipments" %}</span>
+                </a>
+
+                <a href="{% url 'previous_orders_list' %}" class="nav-link {% block nav_prev_orders_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span class="nav-link-text">{% trans "Completed Orders" %}</span>
+                </a>
+
+                <a href="{% url 'clients_list' %}" class="nav-link {% block nav_clients_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span class="nav-link-text">{% trans "Clients" %}</span>
+                </a>
+
+                <div class="nav-section-title">Fleet & Staff</div>
+
+                {% if role != 'MANAGER' %}
+                <a href="{% url 'managers_list' %}" class="nav-link {% block nav_managers_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                    <span class="nav-link-text">{% trans "Managers" %}</span>
+                </a>
+                {% endif %}
+
+                <a href="{% url 'drivers_list' %}" class="nav-link {% block nav_drivers_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="9"></line><line x1="12" y1="15" x2="12" y2="22"></line><line x1="2" y1="12" x2="9" y2="12"></line><line x1="15" y1="12" x2="22" y2="12"></line></svg>
+                    <span class="nav-link-text">{% trans "Drivers" %}</span>
+                </a>
+
+                <div class="nav-section-title">Logistics</div>
+
+                <a href="{% url 'warehouse_list' %}" class="nav-link {% block nav_warehouse_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span class="nav-link-text">{% trans "Warehouses" %}</span>
+                </a>
+
+                <a href="{% url 'products_list' %}" class="nav-link {% block nav_products_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <span class="nav-link-text">{% trans "Products" %}</span>
+                </a>
+
+                <div class="nav-section-title">Reports</div>
+
+                <a href="{% url 'inventory_logs_list' %}" class="nav-link {% block nav_inv_logs_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    <span class="nav-link-text">{% trans "Inventory Logs" %}</span>
+                </a>
+                
+                <a href="{% url 'audit_logs_list' %}" class="nav-link {% block nav_audit_class %}{% endblock %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span class="nav-link-text">{% trans "Audit Logs" %}</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <form method="POST" action="{% url 'logout_user' %}" style="margin: 0; width: 100%;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn" style="width: 100%; border: none; background: transparent; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span class="nav-link-text logout-btn-text">{% trans "Logout" %}</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    
+                    <div class="breadcrumbs">
+                        <a href="{% url 'dashboard_home' %}" class="breadcrumb-item">B2B Tracking</a>
+                        <span class="breadcrumb-separator">/</span>
+                        <span class="breadcrumb-current">{% block page_title %}Overview{% endblock %}</span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    
+                    <!-- Search placeholder -->
+                    <div class="search-container">
+                        <label for="globalSearch" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">{% trans "Search orders, clients, drivers" %}</label>
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="globalSearch" name="q" class="search-input" placeholder="Search orders, clients, drivers..." aria-label="Search orders, clients, drivers...">
+                    </div>
+
+                    {% block topbar_action %}
+                    {% endblock %}
+
+                    <!-- Notifications -->
+                    <div class="notification-wrapper">
+                        <button class="notification-btn notifications" onclick="toggleNotifications()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <span id="notif-badge" class="notification-badge" style="display: none;">0</span>
+                        </button>
+                        
+                        <div id="notif-dropdown" class="notification-dropdown">
+                            <div class="notification-header">
+                                <span>Notifications</span>
+                                <button class="btn-ghost btn-sm" style="font-size: var(--font-size-xs);" onclick="markAllRead(event)">Mark all read</button>
+                            </div>
+                            <div id="notif-list" class="notification-list">
+                                <div class="notification-empty">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Dropdown -->
+                    <div class="profile-wrapper">
+                        <button class="profile-btn" onclick="toggleProfileDropdown()">
+                            <div class="profile-avatar">
+                                {% if role == 'MANAGER' %}
+                                    {{ user.manager.name|default:"M"|slice:":1"|upper }}
+                                {% else %}
+                                    {{ user.company.company_name|default:"C"|slice:":1"|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="profile-info">
+                                <span class="profile-name">
+                                    {% if role == 'MANAGER' %}
+                                        {{ user.manager.name|default:"Manager" }}
+                                    {% else %}
+                                        {{ user.company.company_name|default:"Company Admin" }}
+                                    {% endif %}
+                                </span>
+                                <span class="profile-role">
+                                    {% if role == 'MANAGER' %}Manager{% else %}Admin{% endif %}
+                                </span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-500);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </button>
+                        
+                        <div id="profile-dropdown" class="profile-dropdown">
+                            <button class="dropdown-item" onclick="openEditProfileModal(); toggleProfileDropdown();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                {% trans "Edit Profile" %}
+                            </button>
+                            <button class="dropdown-item" onclick="openChangePasswordModal(); toggleProfileDropdown();">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                {% trans "Change Password" %}
+                            </button>
+                            
+                            <div class="dropdown-divider"></div>
+                            
+                            <div style="padding: var(--space-2) var(--space-4);">
+                                <form action="{% url 'set_language' %}" method="post" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                                    <select name="language" onchange="this.form.submit()" class="form-select" style="padding: var(--space-1) var(--space-2); font-size: var(--font-size-xs);">
+                                        {% get_current_language as LANGUAGE_CODE %}
+                                        {% get_available_languages as LANGUAGES %}
+                                        {% get_language_info_list for LANGUAGES as languages %}
+                                        {% for language in languages %}
+                                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                                                {{ language.name_local }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-container">
+                {% block content %}{% endblock %}
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add Manager/Driver Modal -->
+    <div id="addModal" class="ds-modal-overlay hidden">
+        <div class="ds-modal">
+            <div class="ds-modal-header">
+                <h2>{% if role == 'MANAGER' %}Add New Driver{% else %}Add New Personnel{% endif %}</h2>
+                <button class="btn-icon" onclick="closeAddModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <form id="addPersonnelForm">
+                <div class="ds-modal-body">
+                    {% csrf_token %}
+                    {% if role == 'MANAGER' %}
+                    <input type="hidden" id="roleSelect" name="role" value="driver">
+                    {% else %}
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select id="roleSelect" name="role" class="form-select" onchange="toggleRoleFields()" required>
+                            <option value="manager">Manager</option>
+                            <option value="driver">Driver</option>
+                        </select>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Common Field: Phone -->
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-input" required placeholder="Enter phone number" pattern="^\d{10,15}$" title="Enter a valid phone number (digits only, 10-15 digits)">
+                    </div>
+
+                    <!-- Manager Specific Fields -->
+                    <div id="managerFields">
+                        <div class="form-group">
+                            <label class="form-label">Manager Name</label>
+                            <input type="text" name="manager_name" id="manager_name_input" class="form-input" placeholder="Full name" maxlength="50" title="Name must be under 50 characters">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Team</label>
+                            <input type="text" name="team" class="form-input" placeholder="e.g., Logistics, Regional">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" id="manager_email_input" class="form-input" placeholder="manager@company.com">
+                        </div>
+                    </div>
+
+                    <!-- Driver Specific Fields -->
+                    <div id="driverFields" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Driver Name</label>
+                            <input type="text" name="driver_name" id="driver_name_input" class="form-input" placeholder="Full name" maxlength="50" title="Name must be under 50 characters">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">License ID (Optional)</label>
+                            <input type="text" name="license_id" class="form-input" placeholder="DL Number">
+                        </div>
+                    </div>
+
+                    <div id="formAlert" class="ds-alert hidden"></div>
+                </div>
+                
+                <div class="ds-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div id="editProfileModal" class="ds-modal-overlay hidden">
+        <div class="ds-modal">
+            <div class="ds-modal-header">
+                <h2>Edit Profile</h2>
+                <button class="btn-icon" onclick="closeEditProfileModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="editProfileForm">
+                <div class="ds-modal-body">
+                    {% csrf_token %}
+                    <div id="profileAlert" class="ds-alert hidden"></div>
+                    
+                    {% if role == 'MANAGER' %}
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="name" class="form-input" value="{{ user.manager.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" name="phone" class="form-input" value="{{ user.manager.phone }}" required>
+                    </div>
+                    {% else %}
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" name="company_name" class="form-input" value="{{ user.company.company_name }}" required>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="ds-modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditProfile()">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="ds-modal-overlay hidden">
+        <div class="ds-modal">
+            <div class="ds-modal-header">
+                <h2>Change Password</h2>
+                <button class="btn-icon" onclick="closeChangePasswordModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="ds-modal-body">
+                    {% csrf_token %}
+                    <div id="pwdAlert" class="ds-alert hidden"></div>
+                    
+                    <p class="text-subtle text-sm" style="margin-bottom: var(--space-4);">To change your password, we need to verify your identity using OTP sent to <strong class="text-neutral-900">{{ user.email }}</strong>.</p>
+                    
+                    <div class="form-group">
+                        <button type="button" id="pwd-send-otp-btn" class="btn btn-secondary" style="width: 100%;" onclick="sendPwdOTP()">Send OTP</button>
+                    </div>
+
+                    <div id="pwd-otp-group" class="form-row hidden" style="align-items: center; margin-top: var(--space-4);">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="pwd_otp_input" class="form-input" placeholder="Enter 6-digit OTP">
+                        </div>
+                        <button type="button" id="pwd-verify-otp-btn" class="btn btn-primary" onclick="verifyPwdOTP()">Verify</button>
+                    </div>
+
+                    <div id="pwd-new-group" class="hidden" style="margin-top: var(--space-4); border-top: 1px solid var(--color-neutral-200); padding-top: var(--space-4);">
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="pwd_new" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" id="pwd_confirm" class="form-input" required>
+                        </div>
+                        <button type="button" id="pwd-submit-btn" class="btn btn-primary" style="width: 100%;" onclick="submitChangePassword()">Update Password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin JS -->
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('show');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
+        }
+        
+        // Profile Dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            const notifDropdown = document.getElementById('notif-dropdown');
+            
+            notifDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        // Modals Logic
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+            toggleRoleFields();
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        function toggleRoleFields() {
+            const roleSelect = document.getElementById('roleSelect');
+            const role = roleSelect ? roleSelect.value : 'driver';
+            const managerFields = document.getElementById('managerFields');
+            const driverFields = document.getElementById('driverFields');
+            
+            const mName = document.getElementById('manager_name_input');
+            const mEmail = document.getElementById('manager_email_input');
+            const dName = document.getElementById('driver_name_input');
+
+            if (role === 'manager') {
+                if(managerFields) managerFields.classList.remove('hidden');
+                if(driverFields) driverFields.classList.add('hidden');
+                
+                if(mName) mName.required = true;
+                if(mEmail) mEmail.required = true;
+                if(dName) dName.required = false;
+            } else {
+                if(managerFields) managerFields.classList.add('hidden');
+                if(driverFields) driverFields.classList.remove('hidden');
+                
+                if(mName) mName.required = false;
+                if(mEmail) mEmail.required = false;
+                if(dName) dName.required = true;
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Handle API submission
+        document.getElementById('addPersonnelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            const alertBox = document.getElementById('formAlert');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            alertBox.className = 'ds-alert hidden';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="ds-spinner"></span> Processing...';
+            
+            fetch("{% url 'api_create_personnel' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') || data.csrfmiddlewaretoken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json().then(data => ({status: response.status, body: data})))
+            .then(res => {
+                alertBox.classList.remove('hidden');
+                if (res.status === 201) {
+                    alertBox.classList.add('ds-alert-success');
+                    alertBox.innerText = res.body.message;
+                    setTimeout(() => {
+                        closeAddModal();
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alertBox.classList.add('ds-alert-error');
+                    alertBox.innerText = res.body.error || 'An error occurred.';
+                }
+            })
+            .catch(error => {
+                alertBox.classList.remove('hidden');
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = 'Network error. Please try again.';
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Create Account';
+            });
+        });
+        
+        // Initialize state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleRoleFields();
+            fetchNotifications();
+            setInterval(fetchNotifications, 60000); // poll every 60 seconds
+        });
+        
+        // Notifications Logic
+        let currentUnreadCount = 0;
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notif-dropdown');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            
+            profileDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+        
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag]));
+        }
+        
+        function fetchNotifications() {
+            fetch("{% url 'api_notifications' %}", {
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(r => r.json())
+            .then(data => {
+                const badge = document.getElementById('notif-badge');
+                if (data.unread_count > 0) {
+                    badge.style.display = 'flex';
+                    badge.innerText = data.unread_count > 99 ? '99+' : data.unread_count;
+                    if (data.unread_count > currentUnreadCount) {
+                        playNotificationSound();
+                    }
+                } else {
+                    badge.style.display = 'none';
+                }
+                currentUnreadCount = data.unread_count;
+                
+                const list = document.getElementById('notif-list');
+                if (data.notifications.length === 0) {
+                    list.innerHTML = '<div class="notification-empty">No notifications yet.</div>';
+                } else {
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notification-item" style="background-color: ${n.is_read ? 'transparent' : 'var(--color-primary-50)'};">
+                            <div style="font-weight: ${n.is_read ? 'var(--font-weight-normal)' : 'var(--font-weight-semibold)'}; color: ${n.is_read ? 'var(--color-neutral-700)' : 'var(--color-neutral-900)'};">${escapeHTML(n.message)}</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--color-neutral-400); margin-top: var(--space-1);">${new Date(n.created_at).toLocaleString()}</div>
+                        </div>
+                    `).join('');
+                }
+            }).catch(e => console.error(e));
+        }
+        
+        function markAllRead(e) {
+            e.stopPropagation();
+            fetch("{% url 'api_notifications' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            }).then(() => { fetchNotifications(); });
+        }
+        
+        function playNotificationSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        }
+        
+        // Close dropdowns when clicking outside
+        window.addEventListener('click', function(e) {
+            const notifDropdown = document.getElementById('notif-dropdown');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            const notifIcon = document.querySelector('.notification-btn');
+            const profileBtn = document.querySelector('.profile-btn');
+            
+            if (notifDropdown && notifDropdown.classList.contains('show') && !notifIcon.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.remove('show');
+            }
+            if (profileDropdown && profileDropdown.classList.contains('show') && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Profile Edit & Password Change Logic
+        function openEditProfileModal() { document.getElementById('editProfileModal').classList.remove('hidden'); }
+        function closeEditProfileModal() { document.getElementById('editProfileModal').classList.add('hidden'); }
+        function openChangePasswordModal() { document.getElementById('changePasswordModal').classList.remove('hidden'); }
+        function closeChangePasswordModal() { document.getElementById('changePasswordModal').classList.add('hidden'); }
+
+        function submitEditProfile() {
+            const form = document.getElementById('editProfileForm');
+            const data = new FormData(form);
+            const alertBox = document.getElementById('profileAlert');
+            
+            fetch("{% url 'api_profile_update' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: data
+            })
+            .then(res => res.json().then(data => ({status: res.status, body: data})))
+            .then(res => {
+                alertBox.classList.remove('hidden');
+                if (res.status === 200) {
+                    alertBox.className = 'ds-alert ds-alert-success';
+                    alertBox.innerText = res.body.message;
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    alertBox.className = 'ds-alert ds-alert-error';
+                    alertBox.innerText = res.body.error || 'Error updating profile';
+                }
+            });
+        }
+
+        let isPwdOtpVerified = false;
+        
+        function sendPwdOTP() {
+            const btn = document.getElementById('pwd-send-otp-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="ds-spinner"></span> Sending...';
+            
+            fetch("{% url 'api_profile_send_otp' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('pwd-otp-group').classList.remove('hidden');
+                    btn.innerText = 'OTP Sent';
+                } else {
+                    alert(data.message || 'Error sending OTP');
+                    btn.disabled = false;
+                    btn.innerText = 'Send OTP';
+                }
+            });
+        }
+
+        function verifyPwdOTP() {
+            const otp = document.getElementById('pwd_otp_input').value;
+            const btn = document.getElementById('pwd-verify-otp-btn');
+            if(!otp) return alert('Enter OTP');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="ds-spinner"></span> Verifying...';
+            
+            fetch("{% url 'api_profile_verify_otp' %}", {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `otp=${otp}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    isPwdOtpVerified = true;
+                    btn.innerText = 'Verified';
+                    document.getElementById('pwd-new-group').style.display = 'block';
+                    document.getElementById('pwd-new-group').classList.remove('hidden');
+                    document.getElementById('pwd_otp_input').disabled = true;
+                } else {
+                    alert(data.message || 'Invalid OTP');
+                    btn.disabled = false;
+                    btn.innerText = 'Verify';
+                }
+            });
+        }
+
+        function submitChangePassword() {
+            if (!isPwdOtpVerified) return alert('Verify OTP first');
+            const pwd = document.getElementById('pwd_new').value;
+            const pwdConf = document.getElementById('pwd_confirm').value;
+            const alertBox = document.getElementById('pwdAlert');
+            const btn = document.getElementById('pwd-submit-btn');
+            
+            if (!pwd || !pwdConf) return alert('Enter passwords');
+            if (pwd !== pwdConf) return alert('Passwords do not match');
+            
+            // Validate password
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+            if (!passwordRegex.test(pwd)) {
+                alertBox.classList.remove('hidden');
+                alertBox.className = 'ds-alert ds-alert-error';
+                alertBox.innerText = "Password must contain at least 8 characters, one uppercase letter, one number, and one special character.";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="ds-spinner"></span> Updating...';
+
+            fetch("{% url 'api_profile_change_password' %}", {
+                method: 'POST',
+                headers: { 
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `password=${encodeURIComponent(pwd)}&confirm_password=${encodeURIComponent(pwdConf)}`
+            })
+            .then(res => res.json().then(data => ({status: res.status, body: data})))
+            .then(res => {
+                alertBox.classList.remove('hidden');
+                if (res.status === 200) {
+                    alertBox.className = 'ds-alert ds-alert-success';
+                    alertBox.innerText = res.body.message;
+                    setTimeout(() => closeChangePasswordModal(), 1500);
+                } else {
+                    alertBox.className = 'ds-alert ds-alert-error';
+                    alertBox.innerText = res.body.error || 'Error changing password';
+                    btn.disabled = false;
+                    btn.innerText = 'Update Password';
+                }
+            });
+        }
+    </script>
+    
+    <!-- Leaflet JS (Global for Maps) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    
+    {% include 'b2b_admin/includes/tracking_modal.html' %}
+    {% include 'b2b_admin/includes/tracking_scripts.html' %}
+    
+    <!-- Global Modal Accessibility JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modals = document.querySelectorAll('.ds-modal-overlay');
+            modals.forEach(modal => {
+                modal.setAttribute('role', 'dialog');
+                modal.setAttribute('aria-modal', 'true');
+                const title = modal.querySelector('h2, h3, h4');
+                if (title) {
+                    if (!title.id) title.id = 'modal-title-' + Math.random().toString(36).substr(2, 9);
+                    modal.setAttribute('aria-labelledby', title.id);
+                }
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            const openModals = Array.from(document.querySelectorAll('.ds-modal-overlay:not(.hidden)')).filter(m => getComputedStyle(m).display !== 'none');
+            if (openModals.length === 0) return;
+            
+            const topModal = openModals[openModals.length - 1];
+            
+            if (e.key === 'Escape') {
+                const closeBtn = topModal.querySelector('[onclick*="close"], .btn-icon');
+                if (closeBtn) closeBtn.click();
+                else topModal.classList.add('hidden');
+            }
+            
+            if (e.key === 'Tab') {
+                const focusableElements = topModal.querySelectorAll('a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                
+                if (focusableElements.length > 0) {
+                    const first = focusableElements[0];
+                    const last = focusableElements[focusableElements.length - 1];
+                    
+                    if (e.shiftKey) { 
+                        if (document.activeElement === first || document.activeElement === document.body) {
+                            last.focus();
+                            e.preventDefault();
+                        }
+                    } else { 
+                        if (document.activeElement === last || document.activeElement === document.body) {
+                            first.focus();
+                            e.preventDefault();
+                        }
+                    }
+                } else {
+                    e.preventDefault(); 
+                }
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

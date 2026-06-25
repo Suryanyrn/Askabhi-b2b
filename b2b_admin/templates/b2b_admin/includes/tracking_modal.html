@@ -1,0 +1,100 @@
+<!-- Tracking Modal -->
+<div id="trackingModal" class="ds-modal-overlay hidden" style="z-index: 10000;">
+    <div class="ds-modal" style="max-width: 1200px; width: 95%; height: 95vh; padding: 0; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="ds-modal-header" style="border-bottom: 1px solid var(--color-neutral-200); background: var(--color-neutral-50);">
+            <div>
+                <h2 style="margin: 0; display: flex; align-items: center; gap: var(--space-2);">
+                    Live Tracking <span class="ds-badge ds-badge-warning font-bold">LIVE</span>
+                </h2>
+                <p style="margin: var(--space-1) 0 0 0; font-size: var(--font-size-sm); color: var(--color-neutral-500);" id="trackDriverInfo"></p>
+            </div>
+            <button class="btn-icon" onclick="closeTrackingModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 350px 1fr; flex: 1 1 auto; overflow: hidden;">
+            <!-- Sidebar Details -->
+            <div style="background: white; border-right: 1px solid var(--color-neutral-200); padding: var(--space-6); overflow-y: auto;">
+                <h4 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 mt-0">Order Details</h4>
+                <div style="margin-bottom: var(--space-6);">
+                    <div class="text-sm text-neutral-500 mb-1">Order Number</div>
+                    <div id="trackOrderNum" class="text-lg font-bold" style="color: var(--color-primary-600);"></div>
+                </div>
+                
+                <h4 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 mt-6">Client & Destination</h4>
+                <div style="margin-bottom: var(--space-4);">
+                    <div class="text-sm text-neutral-500 mb-1">Client Name</div>
+                    <div id="trackClientName" class="font-medium text-neutral-900"></div>
+                </div>
+                <div style="margin-bottom: var(--space-4);">
+                    <div class="text-sm text-neutral-500 mb-1">Destination Address</div>
+                    <div id="trackDestination" class="text-sm text-neutral-900" style="line-height: 1.5;"></div>
+                </div>
+
+                <h4 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 mt-6">Driver Info</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-6);">
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200);">
+                        <div class="text-xs text-neutral-500 mb-1">📞 Phone</div>
+                        <div id="trackDriverPhone" class="text-sm font-bold text-neutral-900">--</div>
+                    </div>
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200);">
+                        <div class="text-xs text-neutral-500 mb-1">🚛 Vehicle</div>
+                        <div id="trackVehicleInfo" class="text-sm font-bold text-neutral-900">--</div>
+                    </div>
+                </div>
+                
+                <h4 class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 mt-6">Live Telemetry</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200); text-align: center;">
+                        <div class="text-xs text-neutral-500 mb-1">ETA (IST)</div>
+                        <div id="trackETA" class="text-sm font-bold text-neutral-900">--</div>
+                    </div>
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200); text-align: center;">
+                        <div class="text-xs text-neutral-500 mb-1">Duration</div>
+                        <div id="trackDuration" class="text-sm font-bold text-neutral-900">--</div>
+                    </div>
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200); text-align: center;">
+                        <div class="text-xs text-neutral-500 mb-1">Distance Left</div>
+                        <div id="trackDistance" class="text-sm font-bold" style="color: var(--color-primary-600);">--</div>
+                    </div>
+                    <div style="background: var(--color-neutral-50); padding: var(--space-3); border-radius: var(--radius-md); border: 1px solid var(--color-neutral-200); text-align: center;">
+                        <div class="text-xs text-neutral-500 mb-1">Speed</div>
+                        <div id="trackSpeed" class="text-sm font-bold" style="color: var(--color-warning-500);">--</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Area -->
+            <div style="position: relative; width: 100%; height: 100%;">
+                <div id="trackMap" style="width: 100%; height: 100%; z-index: 1;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review POD Modal -->
+<div id="reviewPodModal" class="ds-modal-overlay hidden" style="z-index: 10000;">
+    <div class="ds-modal" style="max-width: 500px; text-align: center;">
+        <div class="ds-modal-header" style="justify-content: space-between;">
+            <h3 class="m-0 text-xl font-bold">Review Proof of Delivery</h3>
+            <button class="btn-icon" onclick="closeReviewModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="ds-modal-body">
+            <p class="mb-2 mt-0">Order: <strong id="revOrderNum" class="text-neutral-900"></strong></p>
+            <p class="mt-0 mb-4 text-sm text-neutral-500">Driver: <span id="revDriverName"></span></p>
+            
+            <div style="margin: var(--space-5) 0; border: 1px solid var(--color-neutral-200); border-radius: var(--radius-md); overflow: hidden; background: var(--color-neutral-50);">
+                <img id="revProofImg" src="" alt="Proof of Delivery" style="max-width: 100%; max-height: 400px; display: block; margin: 0 auto;">
+            </div>
+            
+            <div style="display: flex; gap: var(--space-4);">
+                <button class="btn btn-primary" style="flex: 1;" onclick="submitPodReview('approve', this)">Approve Delivery</button>
+                <button class="btn btn-primary" style="flex: 1; background-color: var(--color-error-600); border-color: var(--color-error-600);" onclick="submitPodReview('reject', this)">Reject Proof</button>
+            </div>
+            <input type="hidden" id="revShipmentId">
+        </div>
+    </div>
+</div>

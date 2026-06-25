@@ -1,0 +1,154 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "Actualmente no tienes entregas pendientes. ¡Estarse quieto!"
+
+msgid "Enter your password"
+msgstr "Introduce tu contraseña"
+
+msgid "Mobile Number"
+msgstr "Número de teléfono móvil"
+
+msgid "Warehouse"
+msgstr "Depósito"
+
+msgid "Edit Profile"
+msgstr "Editar perfil"
+
+msgid "Password (Sent via SMS)"
+msgstr "Contraseña (Enviada por SMS)"
+
+msgid "Phone Number"
+msgstr "Número de teléfono"
+
+msgid "IN TRANSIT"
+msgstr "EN TRÁNSITO"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "Haga clic para habilitar el seguimiento GPS y notificar al cliente."
+
+msgid "Destination Address"
+msgstr "Dirección de destino"
+
+msgid "Orders"
+msgstr "Órdenes"
+
+msgid "New Delivery Assignment"
+msgstr "Nueva tarea de entrega"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "Panel de control - Portal de seguimiento B2B"
+
+msgid "Clients"
+msgstr "Clientela"
+
+msgid "Enter your phone number"
+msgstr "Introduce tu número de teléfono"
+
+msgid "Logout"
+msgstr "Cerrar sesión"
+
+msgid "Dashboard"
+msgstr "Panel"
+
+msgid "Login to Dashboard"
+msgstr "Iniciar sesión en el panel"
+
+msgid "Driver App"
+msgstr "Aplicación del conductor"
+
+msgid "Welcome"
+msgstr "Bienvenido"
+
+msgid "No Active Shipments"
+msgstr "No hay envíos activos"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Delivery in Progress"
+msgstr "Entrega en curso"
+
+msgid "Sign In"
+msgstr "Iniciar sesión"
+
+msgid "Proof of Delivery"
+msgstr "Prueba de entrega"
+
+msgid "Enter registered mobile no."
+msgstr "Introduce el nº de móvil registrado."
+
+msgid "Inventory Logs"
+msgstr "Registros de inventario"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"Capture una imagen de la firma del cliente o del sello del almacén para "
+"verificar la entrega."
+
+msgid "Drivers"
+msgstr "Conductores"
+
+msgid "Products"
+msgstr "Productos"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "GPS Active"
+msgstr "GPS activo"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "Inicia sesión para ver tus asignaciones de entrega"
+
+msgid "Previous Orders"
+msgstr "Pedidos anteriores"
+
+msgid "Audit Logs"
+msgstr "Registros de auditoría"
+
+msgid "Upload & Complete"
+msgstr "Cargar y completar"
+
+msgid "DISPATCHED"
+msgstr "ENVIADO"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr "Debes estar a menos de 50 metros del destino para marcar la entrega."
+
+msgid "Enter your temporary password"
+msgstr "Ingrese su contraseña temporal"
+
+msgid "Order"
+msgstr "Orden"
+
+msgid "Client"
+msgstr "Cliente"
+
+msgid "Managers"
+msgstr "Gerentes"
+
+msgid "Shipments"
+msgstr "Envíos"
+
+msgid "Mark as Delivered"
+msgstr "Marcar como entregado"
+
+msgid "Change Password"
+msgstr "Cambiar la contraseña"
+
+msgid "Start Delivery"
+msgstr "Iniciar entrega"

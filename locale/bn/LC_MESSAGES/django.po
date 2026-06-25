@@ -1,0 +1,156 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: bn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "আপনার বর্তমানে কোনো পেন্ডিং ডেলিভারি নেই। শক্ত হয়ে বসো!"
+
+msgid "Enter your password"
+msgstr "আপনার পাসওয়ার্ড লিখুন"
+
+msgid "Mobile Number"
+msgstr "মোবাইল নম্বর"
+
+msgid "Warehouse"
+msgstr "গুদাম"
+
+msgid "Edit Profile"
+msgstr "প্রোফাইল সম্পাদনা করুন"
+
+msgid "Password (Sent via SMS)"
+msgstr "পাসওয়ার্ড (এসএমএসের মাধ্যমে পাঠানো হয়েছে)"
+
+msgid "Phone Number"
+msgstr "ফোন নম্বর"
+
+msgid "IN TRANSIT"
+msgstr "ট্রানজিটে"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "GPS ট্র্যাকিং সক্ষম করতে ক্লিক করুন এবং ক্লায়েন্টকে অবহিত করুন।"
+
+msgid "Destination Address"
+msgstr "গন্তব্য ঠিকানা"
+
+msgid "Orders"
+msgstr "আদেশ"
+
+msgid "New Delivery Assignment"
+msgstr "নতুন ডেলিভারি অ্যাসাইনমেন্ট"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "ড্যাশবোর্ড - B2B ট্র্যাকিং পোর্টাল"
+
+msgid "Clients"
+msgstr "ক্লায়েন্টদের"
+
+msgid "Enter your phone number"
+msgstr "আপনার ফোন নম্বর লিখুন"
+
+msgid "Logout"
+msgstr "লগআউট"
+
+msgid "Dashboard"
+msgstr "ড্যাশবোর্ড"
+
+msgid "Login to Dashboard"
+msgstr "ড্যাশবোর্ডে লগইন করুন"
+
+msgid "Driver App"
+msgstr "ড্রাইভার অ্যাপ"
+
+msgid "Welcome"
+msgstr "স্বাগতম"
+
+msgid "No Active Shipments"
+msgstr "কোন সক্রিয় চালান"
+
+msgid "Cancel"
+msgstr "বাতিল করুন"
+
+msgid "Delivery in Progress"
+msgstr "ডেলিভারি চলছে"
+
+msgid "Sign In"
+msgstr "সাইন ইন করুন"
+
+msgid "Proof of Delivery"
+msgstr "ডেলিভারির প্রমাণ"
+
+msgid "Enter registered mobile no."
+msgstr "নিবন্ধিত মোবাইল নম্বর লিখুন।"
+
+msgid "Inventory Logs"
+msgstr "ইনভেন্টরি লগ"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"ডেলিভারি যাচাই করার জন্য অনুগ্রহ করে ক্লায়েন্টের স্বাক্ষর বা গুদাম সীলের "
+"একটি ছবি ক্যাপচার করুন।"
+
+msgid "Drivers"
+msgstr "ড্রাইভার"
+
+msgid "Products"
+msgstr "পণ্য"
+
+msgid "Password"
+msgstr "পাসওয়ার্ড"
+
+msgid "GPS Active"
+msgstr "জিপিএস সক্রিয়"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "আপনার ডেলিভারি অ্যাসাইনমেন্ট দেখতে সাইন ইন করুন"
+
+msgid "Previous Orders"
+msgstr "পূর্ববর্তী আদেশ"
+
+msgid "Audit Logs"
+msgstr "অডিট লগ"
+
+msgid "Upload & Complete"
+msgstr "আপলোড এবং সম্পূর্ণ"
+
+msgid "DISPATCHED"
+msgstr "পাঠানো হয়েছে"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"ডেলিভারি চিহ্নিত করার জন্য আপনাকে অবশ্যই গন্তব্যের 50 মিটারের মধ্যে থাকতে "
+"হবে।"
+
+msgid "Enter your temporary password"
+msgstr "আপনার অস্থায়ী পাসওয়ার্ড লিখুন"
+
+msgid "Order"
+msgstr "অর্ডার"
+
+msgid "Client"
+msgstr "ক্লায়েন্ট"
+
+msgid "Managers"
+msgstr "ম্যানেজারদের"
+
+msgid "Shipments"
+msgstr "চালান"
+
+msgid "Mark as Delivered"
+msgstr "বিতরণ করা হিসাবে চিহ্নিত করুন"
+
+msgid "Change Password"
+msgstr "পাসওয়ার্ড পরিবর্তন করুন"
+
+msgid "Start Delivery"
+msgstr "ডেলিভারি শুরু করুন"

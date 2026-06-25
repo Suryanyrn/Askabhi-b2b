@@ -1,0 +1,966 @@
+{% extends 'b2b_admin/base.html' %}
+{% load static %}
+
+{% block title %}Orders - B2B Logistics{% endblock %}
+{% block nav_orders_class %}active{% endblock %}
+{% block page_title %}Order Management{% endblock %}
+
+{% block topbar_action %}
+<button class="btn btn-primary btn-sm" onclick="openCreateOrderModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    Create Order
+</button>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<style>
+    .responsive-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); }
+    .responsive-grid-sidebar { display: grid; grid-template-columns: 300px 1fr; gap: var(--space-6); }
+    @media (max-width: 768px) {
+        .responsive-grid-2, .responsive-grid-sidebar { grid-template-columns: 1fr !important; }
+    }
+    #map {
+        height: 300px;
+        width: 100%;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-neutral-300);
+        margin-top: var(--space-2);
+        z-index: 1;
+    }
+    
+    .wizard-step {
+        display: none;
+    }
+    .wizard-step.active {
+        display: block;
+    }
+    
+    .product-row {
+        display: grid; 
+        grid-template-columns: 1fr 1fr 100px 50px; 
+        gap: var(--space-4); 
+        align-items: flex-end;
+        margin-bottom: var(--space-4);
+        padding: var(--space-4);
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-md);
+    }
+
+    /* Invoice Template hidden from screen */
+    #invoiceTemplateContainer {
+        display: none;
+    }
+    .invoice-box {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        font-size: 16px;
+        line-height: 24px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #555;
+        background: white;
+    }
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+    }
+    .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+    }
+    .invoice-box table tr td:nth-child(2) {
+        text-align: right;
+    }
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+    }
+    .invoice-box table tr.top table td.title {
+        font-size: 45px;
+        line-height: 45px;
+        color: #333;
+    }
+    .invoice-box table tr.information table td {
+        padding-bottom: 40px;
+    }
+    .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+    }
+    .invoice-box table tr.details td {
+        padding-bottom: 20px;
+    }
+    .invoice-box table tr.item td {
+        border-bottom: 1px solid #eee;
+    }
+    .invoice-box table tr.item.last td {
+        border-bottom: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ds-card" style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center; padding: var(--space-5);">
+    <div>
+        <h2 class="ds-card-title m-0">Client Orders</h2>
+        <p class="text-neutral-500 m-0 text-sm">Manage incoming orders and dispatch shipments.</p>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="ds-card">
+    <div class="ds-table-container">
+        <table class="ds-table">
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Client</th>
+                    <th>Destination</th>
+                    <th style="text-align: center;">Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <strong class="text-neutral-900 font-bold">{{ order.order_number }}</strong><br>
+                        <span class="text-xs text-neutral-500">{{ order.created_at|date:"M d, Y" }}</span>
+                    </td>
+                    <td>
+                        <strong class="text-neutral-800">{{ order.client.name }}</strong><br>
+                        <span class="text-xs text-neutral-500">{{ order.client.email }}</span>
+                    </td>
+                    <td class="text-sm text-neutral-600">{{ order.destination_address|truncatechars:40 }}</td>
+                    <td style="text-align: center;">
+                        {% if order.status == 'PLACED' %}
+                            <span class="ds-badge ds-badge-warning font-bold">Placed</span>
+                        {% elif order.status == 'DISPATCHED' %}
+                            <span class="ds-badge ds-badge-primary font-bold">Dispatched</span>
+                        {% elif order.status == 'IN_TRANSIT' %}
+                            <span class="ds-badge ds-badge-primary font-bold">In Transit</span>
+                        {% elif order.status == 'COMPLETED' %}
+                            <span class="ds-badge ds-badge-success font-bold">Delivered</span>
+                        {% else %}
+                            <span class="ds-badge ds-badge-neutral font-bold">{{ order.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        {% if order.status == 'PLACED' %}
+                            <button class="btn btn-primary btn-sm" onclick="openDispatchModal('{{ order.id }}', '{{ order.order_number }}', {{ order.items.first.warehouse.latitude|default:'0' }}, {{ order.items.first.warehouse.longitude|default:'0' }}, {{ order.destination_lat }}, {{ order.destination_lng }})">Dispatch</button>
+                            <button class="btn btn-ghost btn-sm" style="color: var(--color-error-600);" onclick="openDeleteOrderModal('{{ order.id }}', '{{ order.order_number }}')">Delete</button>
+                        {% else %}
+                            <button class="btn btn-secondary btn-sm" 
+                                data-id="{{ order.shipment.id }}"
+                                data-order="{{ order.order_number }}"
+                                data-client="{{ order.client.name|escapejs }}"
+                                data-destination="{{ order.destination_address|escapejs }}"
+                                data-driver="{{ order.shipment.driver.name|escapejs }}"
+                                data-phone="{{ order.shipment.driver.phone|escapejs }}"
+                                data-vehicle="{{ order.shipment.vehicle_info|default:'--'|escapejs }}"
+                                data-eta="{{ order.shipment.estimated_delivery_time|date:'h:i A (M d)'|default:'--' }} IST"
+                                data-duration="{{ order.shipment.estimated_duration|default:'--' }}"
+                                onclick="openTrackingModal(this)">
+                                Track
+                            </button>
+                            {% if order.shipment.route_geo_json %}
+                                {% with "route-"|add:order.shipment.id as script_id %}
+                                    {{ order.shipment.route_geo_json|json_script:script_id }}
+                                {% endwith %}
+                            {% else %}
+                                <script id="route-{{ order.shipment.id }}" type="application/json">[]</script>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-neutral-500 py-8">
+                        <div style="margin-bottom: var(--space-4);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-neutral-300);"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-neutral-900 mb-1">No orders found</h3>
+                        <p class="text-sm m-0">Create your first order to get started!</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if orders.has_other_pages %}
+    <div style="padding: var(--space-4) var(--space-5); border-top: 1px solid var(--color-neutral-200); display: flex; justify-content: center; gap: var(--space-2);">
+        {% if orders.has_previous %}
+            <a href="?page={{ orders.previous_page_number }}" class="btn btn-secondary btn-sm">Previous</a>
+        {% endif %}
+        
+        <span class="btn btn-primary btn-sm" style="pointer-events: none;">Page {{ orders.number }} of {{ orders.paginator.num_pages }}</span>
+        
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}" class="btn btn-secondary btn-sm">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Create Order Wizard Modal -->
+<div id="createOrderModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal" style="max-width: 1100px; width: 95%;">
+        <div class="ds-modal-header">
+            <h2>Create New Order</h2>
+            <button class="btn-icon" onclick="closeCreateOrderModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="createOrderForm">
+            <!-- STEP 1: Client Details -->
+            <div id="wizardStep1" class="wizard-step active">
+                <div class="ds-modal-body">
+                    <h3 class="text-lg font-bold text-primary-600 mb-4 mt-0">Step 1: Client & Destination</h3>
+                    <div class="responsive-grid-2">
+                        <!-- Left Column: Client Info -->
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Existing Client</label>
+                                <select name="client_id" id="client_id_select" class="form-input" onchange="toggleNewClientFields(this.value)">
+                                    <option value="">-- Create New Client --</option>
+                                    {% for client in company.clients.all %}
+                                        <option value="{{ client.id }}" data-name="{{ client.name }}" data-email="{{ client.email }}" data-phone="{{ client.phone }}" data-address="{{ client.address }}" data-lat="{{ client.latitude }}" data-lng="{{ client.longitude }}">{{ client.name }} ({{ client.email }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div id="newClientFields">
+                                <h4 class="font-bold text-neutral-900 mb-3 mt-4">New Client Details</h4>
+                                <div class="form-group">
+                                    <label class="form-label">Business Name</label>
+                                    <input type="text" name="client_name" id="client_name" class="form-input" maxlength="100" title="Business Name must be under 100 characters">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="client_email" id="client_email" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" name="client_phone" id="client_phone" class="form-input" pattern="^\d{10,15}$" title="Enter a valid phone number (digits only, 10-15 digits)">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Address Line 1</label>
+                                    <input type="text" id="client_addr1" class="form-input" placeholder="Street address">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">City</label>
+                                        <input type="text" id="client_city" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">State</label>
+                                        <input type="text" id="client_state" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Pincode / Zip</label>
+                                    <input type="text" id="client_pin" class="form-input" onkeyup="fetchAddressData('client')">
+                                </div>
+                                
+                                <button type="button" class="btn btn-secondary w-full" onclick="geocodeClientAddress()" style="border-color: var(--color-primary-500); color: var(--color-primary-600); margin-bottom: var(--space-4);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: var(--space-2);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    Locate on Map
+                                </button>
+
+                                <!-- Hidden compiled address -->
+                                <input type="hidden" name="client_address" id="client_combined_address">
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Location Map -->
+                        <div>
+                            <h4 class="font-bold text-neutral-900 mb-1 mt-0">Pin Delivery Location</h4>
+                            <p class="text-xs text-neutral-500 m-0">Click on the map to set the exact delivery coordinates.</p>
+                            <div id="map"></div>
+                            <input type="hidden" name="client_lat" id="client_lat">
+                            <input type="hidden" name="client_lng" id="client_lng">
+                            <div id="coordDisplay" class="text-xs font-bold text-success-600 mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ds-modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="goToStep2()">Next Step ➔</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Products -->
+            <div id="wizardStep2" class="wizard-step">
+                <div class="ds-modal-body">
+                    <h3 class="text-lg font-bold text-primary-600 mb-2 mt-0">Step 2: Add Products</h3>
+                    <p class="text-sm text-neutral-500 mb-5 m-0">Select the products, origin warehouses, and quantities.</p>
+                    
+                    <div id="productsContainer">
+                        <!-- Dynamic Product Rows Go Here -->
+                    </div>
+                    
+                    <button type="button" class="btn btn-secondary w-full" onclick="addProductRow()" style="border-style: dashed; color: var(--color-primary-600); border-color: var(--color-primary-500);">
+                        + Add Another Product
+                    </button>
+
+                    <div id="orderFormAlert" class="ds-alert hidden" style="margin-top: var(--space-4);"></div>
+                </div>
+
+                <div class="ds-modal-footer" style="justify-content: space-between;">
+                    <button type="button" class="btn btn-secondary" onclick="goToStep1()">← Back to Step 1</button>
+                    <button type="submit" class="btn btn-primary">Place Order & Generate Invoice</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Invoice Ready Modal -->
+<div id="invoiceModal" class="ds-modal-overlay hidden" style="z-index: 9999;">
+    <div class="ds-modal" style="max-width: 500px; text-align: center;">
+        <div class="ds-modal-body">
+            <div style="font-size: 4rem; color: var(--color-success-500); margin-bottom: var(--space-3);">✅</div>
+            <h2 class="font-bold text-neutral-900 mb-2 mt-0">Order Placed Successfully!</h2>
+            <p class="text-neutral-500 mb-6">Your order has been recorded and inventory has been deducted.</p>
+            
+            <button class="btn btn-primary w-full" onclick="downloadInvoice()" style="margin-bottom: var(--space-3); padding: var(--space-3); font-size: var(--font-size-md);">
+                📄 Download PDF Invoice
+            </button>
+            <button class="btn btn-secondary w-full" onclick="window.location.reload()">Close & Reload</button>
+        </div>
+    </div>
+</div>
+
+<!-- Dispatch Order Modal -->
+<div id="dispatchOrderModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal" style="max-width: 1100px; width: 95%;">
+        <div class="ds-modal-header">
+            <h2>Dispatch Order <span id="dispatchOrderNum" class="text-primary-600"></span></h2>
+            <button class="btn-icon" onclick="closeDispatchModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        
+        <form id="dispatchOrderForm">
+            <div class="ds-modal-body">
+                <input type="hidden" name="order_id" id="dispatch_order_id">
+                <input type="hidden" name="route_geo_json" id="route_geo_json">
+                <input type="hidden" name="duration" id="dispatch_duration">
+                
+                <div class="responsive-grid-sidebar">
+                    <div>
+                        <h4 class="font-bold text-neutral-900 mb-1 mt-0">Assign Driver</h4>
+                        <p class="text-xs text-neutral-500 mb-4 m-0">Only currently available drivers are listed.</p>
+                        <div class="form-group">
+                            <label class="form-label">Select Driver</label>
+                            <select name="driver_id" class="form-input" required>
+                                <option value="">-- Choose Driver --</option>
+                                {% for driver in available_drivers %}
+                                <option value="{{ driver.id }}">{{ driver.name }} ({{ driver.phone }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if not available_drivers %}
+                        <div class="ds-alert ds-alert-error mt-4">
+                            No drivers available right now!
+                        </div>
+                        {% endif %}
+                        
+                        <div id="dispatchFormAlert" class="ds-alert hidden mt-4"></div>
+                        <button type="submit" class="btn btn-primary w-full" style="margin-top: var(--space-6);" id="dispatchBtn" disabled>Confirm Dispatch</button>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-neutral-900 mb-1 mt-0">Route Generation</h4>
+                        <p class="text-xs text-neutral-500 mb-4 m-0">The route from the warehouse to the destination is generated automatically.</p>
+                        <div id="dispatchMap" style="height: 350px; width: 100%; border-radius: var(--radius-md); border: 1px solid var(--color-neutral-300); z-index: 1;"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Order Modal -->
+<div id="deleteOrderModal" class="ds-modal-overlay hidden">
+    <div class="ds-modal" style="max-width: 400px; text-align: center;">
+        <div class="ds-modal-header" style="justify-content: center;">
+            <h2 class="text-error-600 m-0">Delete Order</h2>
+        </div>
+        <div class="ds-modal-body">
+            <p class="text-neutral-900 mb-2">Are you sure you want to delete order <strong id="delOrderNum"></strong>?</p>
+            <p class="text-sm text-neutral-500 mb-6">This action cannot be undone and will restore the deducted stock.</p>
+            
+            <form id="deleteOrderForm">
+                <input type="hidden" name="order_id" id="del_order_id">
+                <div style="display: flex; gap: var(--space-3); justify-content: center;">
+                    <button type="button" class="btn btn-secondary" onclick="closeDeleteOrderModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: var(--color-error-600); border-color: var(--color-error-600);" id="delOrderBtn">Yes, Delete</button>
+                </div>
+                <div id="delFormAlert" class="ds-alert hidden mt-4" style="text-align: left;"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Invoice Template for PDF Generation -->
+<div id="invoiceTemplateContainer" style="display: none;">
+    <div class="invoice-box" id="invoiceContentToPrint">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title" style="font-size: 32px; color: #1c3d8a; font-weight: bold;">
+                                {{ company.company_name }}
+                            </td>
+                            <td>
+                                Invoice #: <span id="invOrderNum"></span><br>
+                                Created: <span id="invDate"></span><br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Billed To:</strong><br>
+                                <span id="invClientName"></span><br>
+                                <span id="invClientEmail"></span><br>
+                                <span id="invClientAddress"></span>
+                            </td>
+                            <td style="text-align: right;">
+                                <strong>From:</strong><br>
+                                {{ company.company_name }}<br>
+                                {{ company.company_email }}<br>
+                                {{ company.village_or_city }}, {{ company.state }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="heading">
+                <td>Item (Product)</td>
+                <td style="text-align: right;">Quantity</td>
+            </tr>
+            <tbody id="invItemsList">
+                <!-- Added dynamically -->
+            </tbody>
+        </table>
+        <div style="margin-top: 50px; text-align: center; color: #999; font-size: 12px;">
+            Thank you for your business!<br>
+            Powered by B2B Tracking Portal
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- HTML2PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+    let map = null;
+    let marker = null;
+    let productRowCount = 0;
+    
+    // Store current order info for PDF invoice
+    let currentInvoiceData = null;
+
+    // --- Wizard Logic ---
+    function openCreateOrderModal() {
+        document.getElementById('createOrderModal').classList.remove('hidden');
+        goToStep1();
+        
+        if (productRowCount === 0) {
+            addProductRow(); // Add first row
+        }
+        
+        if (!map) {
+            map = L.map('map').setView([51.505, -0.09], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+            L.Control.geocoder({ defaultMarkGeocode: false }).on('markgeocode', function(e) {
+                var latlng = e.geocode.center;
+                if (marker) marker.setLatLng(latlng);
+                else {
+                    marker = L.marker(latlng, {draggable: true}).addTo(map);
+                    marker.on('dragend', updateMarkerPosition);
+                }
+                map.fitBounds(e.geocode.bbox);
+                updateMarkerPosition({target: marker, latlng: latlng});
+            }).addTo(map);
+
+            map.on('click', function(e) {
+                if (marker) marker.setLatLng(e.latlng);
+                else {
+                    marker = L.marker(e.latlng, {draggable: true}).addTo(map);
+                    marker.on('dragend', updateMarkerPosition);
+                }
+                updateMarkerPosition({target: marker, latlng: e.latlng});
+            });
+        }
+        
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+    
+    function updateMarkerPosition(e) {
+        let latlng = e.latlng || e.target.getLatLng();
+        document.getElementById('client_lat').value = latlng.lat;
+        document.getElementById('client_lng').value = latlng.lng;
+        document.getElementById('coordDisplay').innerText = `Coordinates Set: ${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
+    }
+
+    function closeCreateOrderModal() {
+        document.getElementById('createOrderModal').classList.add('hidden');
+        document.getElementById('createOrderForm').reset();
+        document.getElementById('productsContainer').innerHTML = '';
+        productRowCount = 0;
+        
+        // Reset map state
+        document.getElementById('client_lat').value = '';
+        document.getElementById('client_lng').value = '';
+        document.getElementById('coordDisplay').innerText = '';
+        if (marker && map) {
+            map.removeLayer(marker);
+            marker = null;
+        }
+        
+        // Reset submit button state
+        const form = document.getElementById('createOrderForm');
+        delete form.dataset.submitting;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Place Order & Generate Invoice';
+        }
+    }
+
+    function goToStep1() {
+        document.getElementById('wizardStep2').classList.remove('active');
+        document.getElementById('wizardStep1').classList.add('active');
+        setTimeout(() => map.invalidateSize(), 100);
+    }
+    
+    function goToStep2() {
+        // Basic validation of step 1
+        const clientId = document.getElementById('client_id_select').value;
+        const lat = document.getElementById('client_lat').value;
+        const lng = document.getElementById('client_lng').value;
+        
+        if (!clientId) {
+            const cName = document.getElementById('client_name').value.trim();
+            const cEmail = document.getElementById('client_email').value.trim();
+            const cPhone = document.getElementById('client_phone').value.trim();
+            if (!cName || !cEmail || !cPhone) {
+                alert('Please fill out the Business Name, Email, and Phone for the new client.');
+                return;
+            }
+        }
+        
+        if (!lat || !lng) {
+            alert('Please ensure a delivery location is pinned on the map.');
+            return;
+        }
+        document.getElementById('wizardStep1').classList.remove('active');
+        document.getElementById('wizardStep2').classList.add('active');
+    }
+
+    function addProductRow() {
+        productRowCount++;
+        const container = document.getElementById('productsContainer');
+        const rowId = 'prod-row-' + productRowCount;
+        
+        const row = document.createElement('div');
+        row.className = 'product-row';
+        row.id = rowId;
+        
+        row.innerHTML = `
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label text-xs">Warehouse Origin</label>
+                <select name="item_warehouse_${productRowCount}" class="dyn-wh form-input" required>
+                    <option value="">-- Select Origin --</option>
+                    {% for warehouse in warehouses %}
+                    <option value="{{ warehouse.id }}" data-name="{{ warehouse.name }}">{{ warehouse.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label text-xs">Product</label>
+                <select name="item_product_${productRowCount}" class="dyn-prod form-input" required>
+                    <option value="">-- Select Product --</option>
+                    {% for product in products %}
+                    <option value="{{ product.id }}" data-name="{{ product.name }}">{{ product.name }} ({{ product.sku }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label text-xs">Qty <span class="stock-display" style="font-weight: normal; margin-left: 5px;"></span></label>
+                <input type="number" name="item_qty_${productRowCount}" class="dyn-qty form-input" required min="1" value="1">
+            </div>
+            <div style="text-align: right; padding-bottom: 5px;">
+                ${productRowCount > 1 ? `<button type="button" class="btn-icon" style="color: var(--color-error-600);" onclick="document.getElementById('${rowId}').remove()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>` : ''}
+            </div>
+        `;
+        container.appendChild(row);
+        
+        const whSelect = row.querySelector('.dyn-wh');
+        const prodSelect = row.querySelector('.dyn-prod');
+        const stockDisplay = row.querySelector('.stock-display');
+        
+        const updateStock = () => {
+            if (whSelect.value && prodSelect.value) {
+                fetch(`/logistics/api/stock/available/?warehouse_id=${whSelect.value}&product_id=${prodSelect.value}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                }).then(r => r.json()).then(data => {
+                    if (data.stock_quantity !== undefined) {
+                        stockDisplay.innerText = `(Available: ${data.stock_quantity})`;
+                        stockDisplay.style.color = data.stock_quantity > 0 ? 'var(--color-success-600)' : 'var(--color-error-600)';
+                    }
+                });
+            } else {
+                stockDisplay.innerText = '';
+            }
+        };
+        
+        whSelect.addEventListener('change', updateStock);
+        prodSelect.addEventListener('change', updateStock);
+    }
+
+    // --- Geocoding & Addresses ---
+    function fetchAddressData(prefix) {
+        let pincode = document.getElementById(prefix + '_pin').value;
+        if (pincode.length === 6) {
+            fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data[0].Status === "Success") {
+                        let postOffice = data[0].PostOffice[0];
+                        document.getElementById(prefix + '_state').value = postOffice.State;
+                        document.getElementById(prefix + '_city').value = (postOffice.Block && postOffice.Block !== "NA") ? postOffice.Block : postOffice.Name;
+                    }
+                }).catch(e => console.error(e));
+        }
+    }
+
+    function geocodeClientAddress() {
+        const addr1 = document.getElementById('client_addr1').value;
+        const city = document.getElementById('client_city').value;
+        const state = document.getElementById('client_state').value;
+        const pin = document.getElementById('client_pin').value;
+        
+        if (!addr1 || !city || !pin) { alert("Please fill Address Line 1, City, and Pincode."); return; }
+        const fullAddress = `${addr1}, ${city}, ${state}, ${pin}`;
+        document.getElementById('client_combined_address').value = fullAddress;
+        
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const latlng = new L.LatLng(data[0].lat, data[0].lon);
+                    map.setView(latlng, 15);
+                    if (marker) marker.setLatLng(latlng);
+                    else {
+                        marker = L.marker(latlng, {draggable: true}).addTo(map);
+                        marker.on('dragend', updateMarkerPosition);
+                    }
+                    updateMarkerPosition({target: marker, latlng: latlng});
+                } else {
+                    // Fallback to City, State, Pin
+                    const fallbackAddress = `${city}, ${state}, ${pin}`;
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fallbackAddress)}`)
+                        .then(r => r.json())
+                        .then(fallbackData => {
+                            if (fallbackData && fallbackData.length > 0) {
+                                const latlng = new L.LatLng(fallbackData[0].lat, fallbackData[0].lon);
+                                map.setView(latlng, 12);
+                                if (marker) marker.setLatLng(latlng);
+                                else { marker = L.marker(latlng, {draggable: true}).addTo(map); marker.on('dragend', updateMarkerPosition); }
+                                updateMarkerPosition({target: marker, latlng: latlng});
+                                alert("Precise address not found. Dropped pin at general city location. Please drag marker to exact location.");
+                            } else {
+                                alert("Location not found. Please drop pin manually.");
+                            }
+                        }).catch(e => alert("Error connecting to geocoding service."));
+                }
+            }).catch(e => alert("Error connecting to geocoding service."));
+    }
+
+    function toggleNewClientFields(clientId) {
+        const fields = document.getElementById('newClientFields');
+        if (clientId) {
+            fields.style.display = 'none';
+            // Also move map to client location if possible
+            const sel = document.getElementById('client_id_select');
+            const opt = sel.options[sel.selectedIndex];
+            const lat = opt.getAttribute('data-lat');
+            const lng = opt.getAttribute('data-lng');
+            if(lat && lng && lat !== 'None' && lng !== 'None') {
+                const latlng = new L.LatLng(lat, lng);
+                map.setView(latlng, 14);
+                if(marker) marker.setLatLng(latlng);
+                else { marker = L.marker(latlng, {draggable: true}).addTo(map); marker.on('dragend', updateMarkerPosition); }
+                updateMarkerPosition({target: marker, latlng: latlng});
+            }
+        } else {
+            fields.style.display = 'block';
+        }
+    }
+
+    // --- Order Submission ---
+    document.getElementById('createOrderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (this.dataset.submitting) return;
+        this.dataset.submitting = 'true';
+        
+        const alertBox = document.getElementById('orderFormAlert');
+        const submitBtn = this.querySelector('button[type="submit"]');
+        alertBox.className = 'ds-alert hidden';
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Validating & Placing Order...';
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Build items array
+        let items = [];
+        let itemsForInvoice = [];
+        const rows = document.querySelectorAll('.product-row');
+        rows.forEach(row => {
+            const wh = row.querySelector('.dyn-wh');
+            const pr = row.querySelector('.dyn-prod');
+            const qt = row.querySelector('.dyn-qty');
+            if (wh.value && pr.value && qt.value) {
+                items.push({
+                    warehouse_id: wh.value,
+                    product_id: pr.value,
+                    quantity: qt.value
+                });
+                itemsForInvoice.push({
+                    name: pr.options[pr.selectedIndex].getAttribute('data-name'),
+                    qty: qt.value
+                });
+            }
+        });
+        
+        if (items.length === 0) {
+            alertBox.classList.remove('hidden');
+            alertBox.classList.add('ds-alert-error');
+            alertBox.innerText = 'Please add at least one product.';
+            submitBtn.disabled = false; submitBtn.innerText = 'Place Order & Generate Invoice';
+            delete this.dataset.submitting; return;
+        }
+        
+        data.items = items;
+        
+        // Handle Client
+        const isNewClient = document.getElementById('client_id_select').value === "";
+        let cName, cEmail, cAddr;
+        if (isNewClient) {
+            const lat = document.getElementById('client_lat').value;
+            if (!lat) {
+                alertBox.classList.remove('hidden'); 
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = 'Please locate client on map in Step 1.';
+                submitBtn.disabled = false; submitBtn.innerText = 'Place Order & Generate Invoice';
+                delete this.dataset.submitting; return;
+            }
+            if (!document.getElementById('client_combined_address').value) {
+                document.getElementById('client_combined_address').value = `${data.client_addr1 || ''}, ${data.client_city || ''}, ${data.client_state || ''}, ${data.client_pin || ''}`;
+            }
+            data.client_address = document.getElementById('client_combined_address').value;
+            
+            cName = data.client_name;
+            cEmail = data.client_email;
+            cAddr = data.client_address;
+        } else {
+            const sel = document.getElementById('client_id_select');
+            const opt = sel.options[sel.selectedIndex];
+            cName = opt.getAttribute('data-name');
+            cEmail = opt.getAttribute('data-email');
+            cAddr = opt.getAttribute('data-address');
+        }
+        
+        // Send to backend
+        fetch("{% url 'api_create_order' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(res => {
+            if (res.status === 201) {
+                // Success! Save data for Invoice
+                currentInvoiceData = {
+                    orderNumber: 'Ready in system',
+                    date: new Date().toLocaleDateString(),
+                    clientName: cName,
+                    clientEmail: cEmail,
+                    clientAddress: cAddr,
+                    items: itemsForInvoice
+                };
+                
+                closeCreateOrderModal();
+                document.getElementById('invoiceModal').classList.remove('hidden');
+                
+            } else {
+                alertBox.classList.remove('hidden');
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = res.body.error || 'An error occurred.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Place Order & Generate Invoice';
+                delete this.dataset.submitting;
+            }
+        })
+        .catch(err => {
+            alertBox.classList.remove('hidden'); 
+            alertBox.classList.add('ds-alert-error');
+            alertBox.innerText = 'Network error.';
+            submitBtn.disabled = false; submitBtn.innerText = 'Place Order & Generate Invoice';
+            delete this.dataset.submitting;
+        });
+    });
+
+    // --- PDF Generation ---
+    function downloadInvoice() {
+        if (!currentInvoiceData) return;
+        
+        // Populate Template
+        document.getElementById('invOrderNum').innerText = "GENERATED";
+        document.getElementById('invDate').innerText = currentInvoiceData.date;
+        document.getElementById('invClientName').innerText = currentInvoiceData.clientName;
+        document.getElementById('invClientEmail').innerText = currentInvoiceData.clientEmail;
+        document.getElementById('invClientAddress').innerText = currentInvoiceData.clientAddress;
+        
+        const list = document.getElementById('invItemsList');
+        list.innerHTML = '';
+        currentInvoiceData.items.forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = (idx === currentInvoiceData.items.length - 1) ? 'item last' : 'item';
+            tr.innerHTML = `<td>${item.name}</td><td style="text-align: right;">${item.qty} units</td>`;
+            list.appendChild(tr);
+        });
+        
+        // Generate PDF
+        const element = document.getElementById('invoiceContentToPrint');
+        element.style.display = 'block'; // Make visible to html2pdf
+        
+        const opt = {
+            margin:       1,
+            filename:     `Invoice_${currentInvoiceData.clientName.replace(/\s+/g,'_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none'; // Hide again
+        });
+    }
+
+    // --- Dispatch & Delete logic kept same as before but abbreviated for brevity ---
+    let dispatchMap = null; let routingControl = null;
+    function openDispatchModal(oId, oNum, sLat, sLng, eLat, eLng) {
+        document.getElementById('dispatchOrderModal').classList.remove('hidden');
+        document.getElementById('dispatch_order_id').value = oId;
+        document.getElementById('dispatchOrderNum').innerText = oNum;
+        if(!dispatchMap) {
+            dispatchMap = L.map('dispatchMap').setView([sLat||51.5, sLng||-0.09], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19}).addTo(dispatchMap);
+        }
+        setTimeout(() => dispatchMap.invalidateSize(), 100);
+        if(routingControl) dispatchMap.removeControl(routingControl);
+        routingControl = L.Routing.control({
+            waypoints: [L.latLng(sLat, sLng), L.latLng(eLat, eLng)],
+            routeWhileDragging: false, addWaypoints: false, draggableWaypoints: false, show: false,
+            createMarker: () => null
+        }).addTo(dispatchMap);
+        routingControl.on('routesfound', function(e) {
+            if(e.routes.length > 0) {
+                document.getElementById('route_geo_json').value = JSON.stringify(e.routes[0].coordinates.map(c => [c.lat, c.lng]));
+                document.getElementById('dispatch_duration').value = e.routes[0].summary.totalTime;
+                document.getElementById('dispatchBtn').disabled = false;
+            }
+        });
+    }
+    function closeDispatchModal() { document.getElementById('dispatchOrderModal').classList.add('hidden'); }
+    
+    document.getElementById('dispatchOrderForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const submitBtn = document.getElementById('dispatchBtn');
+        const alertBox = document.getElementById('dispatchFormAlert');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="ds-spinner"></span> Dispatching...';
+        
+        const formData = Object.fromEntries(new FormData(this).entries());
+        if (formData.route_geo_json) {
+            try {
+                formData.route_geo_json = JSON.parse(formData.route_geo_json);
+            } catch (e) {}
+        }
+        
+        fetch("{% url 'api_dispatch_order' %}", {
+            method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+            body: JSON.stringify(formData)
+        }).then(r => r.json().then(d => { 
+            if(r.status===200) {
+                window.location.reload(); 
+            } else {
+                alertBox.classList.remove('hidden');
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = d.error || 'Failed to dispatch order.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Confirm Dispatch';
+            }
+        }));
+    });
+    
+    function openDeleteOrderModal(id, num) {
+        document.getElementById('deleteOrderModal').classList.remove('hidden');
+        document.getElementById('del_order_id').value = id;
+        document.getElementById('delOrderNum').innerText = num;
+    }
+    function closeDeleteOrderModal() { document.getElementById('deleteOrderModal').classList.add('hidden'); }
+    
+    document.getElementById('deleteOrderForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        const submitBtn = document.getElementById('delOrderBtn');
+        const alertBox = document.getElementById('delFormAlert');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Deleting...';
+        
+        fetch("{% url 'api_delete_order' %}", {
+            method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':getCookie('csrftoken')},
+            body: JSON.stringify({order_id: document.getElementById('del_order_id').value})
+        }).then(r => r.json().then(d => { 
+            if(r.status===200) {
+                window.location.reload(); 
+            } else {
+                alertBox.classList.remove('hidden');
+                alertBox.classList.add('ds-alert-error');
+                alertBox.innerText = d.error || 'Failed to delete order.';
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Yes, Delete';
+            }
+        }));
+    });
+
+</script>
+{% endblock %}

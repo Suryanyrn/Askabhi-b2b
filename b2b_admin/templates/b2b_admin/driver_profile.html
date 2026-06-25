@@ -1,0 +1,83 @@
+{% extends 'b2b_admin/base.html' %}
+{% load static %}
+
+{% block title %}Driver Profile - {{ driver.name }}{% endblock %}
+{% block page_title %}Driver Profile{% endblock %}
+{% block nav_drivers_class %}active{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="ds-card" style="margin-bottom: var(--space-5); padding: var(--space-6);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h2 class="text-2xl font-bold text-neutral-900 m-0 mb-1">{{ driver.name }}</h2>
+                <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-2);">
+                    <div style="display: flex; align-items: center; gap: var(--space-1); color: var(--color-neutral-600); font-size: var(--font-size-sm);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span>{{ driver.phone }}</span>
+                    </div>
+                </div>
+                <p class="text-xs text-neutral-500 m-0">Joined: {{ driver.created_at|date:"M d, Y"|default:'Unknown' }}</p>
+            </div>
+            <div>
+                {% if driver.is_available %}
+                <span class="ds-badge ds-badge-success font-bold">Available</span>
+                {% else %}
+                <span class="ds-badge ds-badge-warning font-bold">On Delivery</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <h3 class="text-lg font-bold text-neutral-900" style="margin-top: var(--space-6); margin-bottom: var(--space-4);">Delivery History</h3>
+    
+    {% if completed_shipments %}
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        {% for shipment in completed_shipments %}
+        <div class="ds-card" style="padding: var(--space-5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+                <h4 class="font-bold text-neutral-900 m-0">Order #{{ shipment.order.order_number }}</h4>
+                {% if shipment.status == 'PENDING_APPROVAL' %}
+                <span class="ds-badge ds-badge-warning font-bold">Pending POD</span>
+                {% else %}
+                <span class="ds-badge ds-badge-success font-bold">Completed</span>
+                {% endif %}
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4);">
+                <div>
+                    <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Client</div>
+                    <div class="font-medium text-neutral-900">{{ shipment.order.client.name }}</div>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">Vehicle</div>
+                    <div class="font-medium text-neutral-900">{{ shipment.vehicle_info|default:"N/A" }}</div>
+                </div>
+            </div>
+            
+            {% if shipment.completed_at %}
+            <div class="text-sm text-neutral-500" style="margin-top: var(--space-4); border-top: 1px solid var(--color-neutral-200); padding-top: var(--space-3);">
+                Delivered on {{ shipment.completed_at|date:"M d, Y h:i a" }}
+            </div>
+            {% endif %}
+            
+            {% if shipment.proof_of_delivery_url %}
+            <div style="margin-top: var(--space-3);">
+                <a href="{{ shipment.proof_of_delivery_url }}" target="_blank" style="color: var(--color-primary-600); text-decoration: none; font-size: var(--font-size-sm); font-weight: 500; display: inline-flex; align-items: center; gap: var(--space-1);">
+                    📄 View Proof of Delivery
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="ds-card" style="text-align: center; padding: var(--space-8); border: 1px dashed var(--color-neutral-300); background: transparent; box-shadow: none;">
+            <div style="margin-bottom: var(--space-4); color: var(--color-neutral-400);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <p class="text-neutral-500 m-0">This driver has no completed deliveries yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

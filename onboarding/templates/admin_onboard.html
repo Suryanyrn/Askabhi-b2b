@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | B2B Logistics Platform</title>
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+    
+    <!-- Auth/Onboarding Specific CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="auth-layout">
+        
+        <!-- Left Branding Panel -->
+        <div class="auth-panel-branding">
+            <div class="auth-bg-shape auth-bg-shape-1"></div>
+            <div class="auth-bg-shape auth-bg-shape-2"></div>
+            
+            <a href="/" class="auth-brand-logo">
+                <div class="auth-brand-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                B2B Logistics
+            </a>
+            
+            <div class="auth-branding-content">
+                <h1 class="auth-branding-title">Intelligent Supply Chain Management</h1>
+                <p class="auth-branding-desc">Manage your orders, fleets, clients, and real-time shipments with absolute precision and enterprise-grade security.</p>
+            </div>
+            
+            <div class="text-sm" style="z-index: 10; opacity: 0.7;">
+                © 2026 B2B Logistics Platform
+            </div>
+        </div>
+        
+        <!-- Right Form Panel -->
+        <div class="auth-panel-form">
+            
+            <!-- Mobile Logo -->
+            <a href="/" class="auth-mobile-logo">
+                <div class="auth-mobile-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                B2B Logistics
+            </a>
+
+            <div class="auth-form-container">
+                
+                {% if messages %}
+                <div style="margin-bottom: var(--space-6);">
+                    {% for message in messages %}
+                        <div class="ds-alert ds-alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- LOGIN SECTION -->
+                <div id="login-section" class="auth-step active">
+                    <div class="auth-header">
+                        <h2 class="auth-title">Welcome back</h2>
+                        <p class="auth-subtitle">Enter your credentials to access your dashboard.</p>
+                    </div>
+
+                    <form method="POST" action="{% url 'admin_onboarding' %}">
+                        {% csrf_token %}
+                        
+                        <div class="auth-input-group">
+                            <input type="email" name="login_email" id="login_email" class="auth-input" placeholder=" " required>
+                            <label for="login_email" class="auth-label">Email address</label>
+                        </div>
+                        
+                        <div class="auth-input-group">
+                            <input type="password" name="login_password" id="login_password" class="auth-input" placeholder=" " required>
+                            <label for="login_password" class="auth-label">Password</label>
+                        </div>
+                        
+                        <button type="submit" class="auth-submit-btn">Sign In</button>
+                    </form>
+                    
+                    <div class="auth-divider">New to B2B Logistics?</div>
+                    
+                    <div style="text-align: center;">
+                        <button id="nav-onboard-btn" class="btn btn-secondary" style="width: 100%;" onclick="switchForm('onboard')">Create Company Account</button>
+                    </div>
+                </div>
+
+                <!-- ONBOARDING SECTION -->
+                <div id="onboard-section" class="auth-step hidden">
+                    <div class="auth-header">
+                        <h2 class="auth-title">Create your account</h2>
+                        <p class="auth-subtitle">Set up your company workspace in minutes.</p>
+                    </div>
+
+                    <form method="POST" action="{% url 'admin_onboarding' %}">
+                        {% csrf_token %}
+                        
+                        <h3 class="text-md font-bold mb-4" style="margin-bottom: var(--space-4);">Company Details</h3>
+                        
+                        <div class="auth-input-group">
+                            <input type="text" name="company_name" id="company_name" class="auth-input" placeholder=" " maxlength="50" required>
+                            <label for="company_name" class="auth-label">Company Name</label>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-5);">
+                            <div class="auth-input-group" style="flex: 1; margin-bottom: 0;">
+                                <input type="email" id="company_email" name="company_email" class="auth-input" placeholder=" " required>
+                                <label for="company_email" class="auth-label">Work Email (No Free Domains)</label>
+                            </div>
+                            <button type="button" id="send-otp-btn" class="btn btn-secondary" onclick="sendOTP()" style="white-space: nowrap;">Send OTP</button>
+                        </div>
+
+                        <div id="otp-group" class="hidden" style="display: none; background: var(--color-neutral-50); padding: var(--space-4); border-radius: var(--radius-lg); margin-bottom: var(--space-5); border: 1px solid var(--color-neutral-200);">
+                            <div style="display: flex; gap: var(--space-3); align-items: center;">
+                                <div class="auth-input-group" style="flex: 1; margin-bottom: 0;">
+                                    <input type="text" id="otp_input" name="otp_input" class="auth-input" placeholder=" " maxlength="6">
+                                    <label for="otp_input" class="auth-label">Enter 6-digit OTP</label>
+                                </div>
+                                <button type="button" id="verify-otp-btn" class="btn btn-primary" onclick="verifyOTP()">Verify</button>
+                            </div>
+                            <small id="otp-message" style="display: block; margin-top: var(--space-2); color: var(--color-primary-600); font-weight: var(--font-weight-medium);"></small>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <input type="password" name="password" id="password" class="auth-input" placeholder=" " required>
+                            <label for="password" class="auth-label">Create Password</label>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--color-neutral-200); margin: var(--space-8) 0;">
+                        <h3 class="text-md font-bold mb-4" style="margin-bottom: var(--space-4);">Company Address</h3>
+
+                        <div class="auth-input-group">
+                            <input type="text" name="address_line_1" id="address_line_1" class="auth-input" placeholder=" " maxlength="150" required>
+                            <label for="address_line_1" class="auth-label">Address Line 1</label>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <input type="text" name="address_line_2" id="address_line_2" class="auth-input" placeholder=" ">
+                            <label for="address_line_2" class="auth-label">Address Line 2 (Optional)</label>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-4);">
+                            <div class="auth-input-group" style="flex: 1;">
+                                <input type="text" id="pincode" name="pincode" class="auth-input" placeholder=" " required onkeyup="fetchAddressData()">
+                                <label for="pincode" class="auth-label">Pincode</label>
+                            </div>
+                            <div class="auth-input-group" style="flex: 1;">
+                                <input type="text" id="country" name="country" class="auth-input" value="India" placeholder=" " readonly style="background: var(--color-neutral-50);">
+                                <label for="country" class="auth-label">Country</label>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: var(--space-4);">
+                            <div class="auth-input-group" style="flex: 1;">
+                                <input type="text" id="state" name="state" class="auth-input" required readonly placeholder=" " style="background: var(--color-neutral-50);">
+                                <label for="state" class="auth-label">State</label>
+                            </div>
+                            <div class="auth-input-group" style="flex: 1;">
+                                <input type="text" id="district" name="district" class="auth-input" required readonly placeholder=" " style="background: var(--color-neutral-50);">
+                                <label for="district" class="auth-label">District</label>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <input type="text" id="village_or_city" name="village_or_city" class="auth-input" required readonly placeholder=" " style="background: var(--color-neutral-50);">
+                            <label for="village_or_city" class="auth-label">Village/City</label>
+                        </div>
+
+                        <button type="submit" id="complete-onboarding-btn" class="auth-submit-btn" disabled style="opacity: 0.5; cursor: not-allowed; margin-top: var(--space-6);">Complete Registration</button>
+                    </form>
+                    
+                    <div class="auth-divider">Already have an account?</div>
+                    
+                    <div style="text-align: center;">
+                        <button id="nav-login-btn" class="btn btn-ghost" style="width: 100%;" onclick="switchForm('login')">Sign in instead</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

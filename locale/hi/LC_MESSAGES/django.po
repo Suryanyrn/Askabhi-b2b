@@ -1,0 +1,155 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: askabhi@example.com\n"
+"POT-Creation-Date: 2026-06-24 15:00+0530\n"
+"PO-Revision-Date: 2026-06-24 15:00+0530\n"
+"Last-Translator: Auto Translator\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "You currently have no pending deliveries. Sit tight!"
+msgstr "आपके पास वर्तमान में कोई लंबित डिलीवरी नहीं है। तंग बैठते!"
+
+msgid "Enter your password"
+msgstr "अपना कूटशब्द भरें"
+
+msgid "Mobile Number"
+msgstr "मोबाइल नंबर"
+
+msgid "Warehouse"
+msgstr "गोदाम"
+
+msgid "Edit Profile"
+msgstr "प्रोफ़ाइल संपादित करें"
+
+msgid "Password (Sent via SMS)"
+msgstr "पासवर्ड (एसएमएस द्वारा भेजा गया)"
+
+msgid "Phone Number"
+msgstr "फ़ोन नंबर"
+
+msgid "IN TRANSIT"
+msgstr "पारगमन में"
+
+msgid "Click to enable GPS tracking and notify the client."
+msgstr "जीपीएस ट्रैकिंग सक्षम करने और ग्राहक को सूचित करने के लिए क्लिक करें।"
+
+msgid "Destination Address"
+msgstr "गंतव्य पता"
+
+msgid "Orders"
+msgstr "आदेश"
+
+msgid "New Delivery Assignment"
+msgstr "नया डिलिवरी असाइनमेंट"
+
+msgid "Dashboard - B2B Tracking Portal"
+msgstr "डैशबोर्ड - बी2बी ट्रैकिंग पोर्टल"
+
+msgid "Clients"
+msgstr "ग्राहकों"
+
+msgid "Enter your phone number"
+msgstr "अपना फोन नंबर डालें"
+
+msgid "Logout"
+msgstr "लॉग आउट"
+
+msgid "Dashboard"
+msgstr "डैशबोर्ड"
+
+msgid "Login to Dashboard"
+msgstr "डैशबोर्ड पर लॉग इन करें"
+
+msgid "Driver App"
+msgstr "ड्राइवर ऐप"
+
+msgid "Welcome"
+msgstr "स्वागत"
+
+msgid "No Active Shipments"
+msgstr "कोई सक्रिय शिपमेंट नहीं"
+
+msgid "Cancel"
+msgstr "रद्द करना"
+
+msgid "Delivery in Progress"
+msgstr "डिलीवरी प्रगति पर है"
+
+msgid "Sign In"
+msgstr "दाखिल करना"
+
+msgid "Proof of Delivery"
+msgstr "डिलीवरी का सबूत"
+
+msgid "Enter registered mobile no."
+msgstr "पंजीकृत मोबाइल नंबर दर्ज करें."
+
+msgid "Inventory Logs"
+msgstr "इन्वेंटरी लॉग"
+
+msgid ""
+"Please capture an image of the client signature or warehouse seal to verify "
+"delivery."
+msgstr ""
+"डिलीवरी को सत्यापित करने के लिए कृपया ग्राहक के हस्ताक्षर या गोदाम सील की एक"
+" छवि कैप्चर करें।"
+
+msgid "Drivers"
+msgstr "ड्राइवरों"
+
+msgid "Products"
+msgstr "उत्पादों"
+
+msgid "Password"
+msgstr "पासवर्ड"
+
+msgid "GPS Active"
+msgstr "जीपीएस सक्रिय"
+
+msgid "Sign in to view your delivery assignments"
+msgstr "अपने डिलीवरी असाइनमेंट देखने के लिए साइन इन करें"
+
+msgid "Previous Orders"
+msgstr "पिछले आदेश"
+
+msgid "Audit Logs"
+msgstr "ऑडिट लॉग"
+
+msgid "Upload & Complete"
+msgstr "अपलोड करें और पूर्ण करें"
+
+msgid "DISPATCHED"
+msgstr "भेजा गया"
+
+msgid "You must be within 50 meters of the destination to mark delivered."
+msgstr ""
+"डिलीवरी को चिह्नित करने के लिए आपको गंतव्य के 50 मीटर के भीतर होना चाहिए।"
+
+msgid "Enter your temporary password"
+msgstr "अपना अस्थायी पासवर्ड दर्ज करें"
+
+msgid "Order"
+msgstr "आदेश"
+
+msgid "Client"
+msgstr "ग्राहक"
+
+msgid "Managers"
+msgstr "प्रबंधकों"
+
+msgid "Shipments"
+msgstr "लदान"
+
+msgid "Mark as Delivered"
+msgstr "वितरित के रूप में चिह्नित करें"
+
+msgid "Change Password"
+msgstr "पासवर्ड बदलें"
+
+msgid "Start Delivery"
+msgstr "डिलिवरी शुरू करें"

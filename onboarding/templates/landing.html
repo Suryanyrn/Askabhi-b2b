@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B Logistics | Enterprise Supply Chain Management</title>
+    {% load static %}
+    
+    <!-- Design System -->
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+    
+    <style>
+        /* Landing Page Specific Overrides */
+        body {
+            background-color: var(--surface-primary);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4) var(--space-8);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-neutral-200);
+            z-index: var(--z-sticky);
+            transition: all var(--transition-normal);
+        }
+
+        .landing-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-neutral-900);
+            text-decoration: none;
+        }
+
+        .landing-brand-icon {
+            color: var(--color-primary-600);
+        }
+
+        .landing-nav-links {
+            display: none;
+            align-items: center;
+            gap: var(--space-6);
+        }
+        @media (min-width: 768px) {
+            .landing-nav-links { display: flex; }
+        }
+
+        .landing-nav-link {
+            color: var(--color-neutral-600);
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        .landing-nav-link:hover { color: var(--color-primary-600); }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 160px var(--space-6) 100px;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(180deg, var(--color-primary-50) 0%, var(--surface-primary) 100%);
+            overflow: hidden;
+        }
+
+        .hero-bg-glow {
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: var(--space-1) var(--space-4);
+            background: var(--color-primary-100);
+            color: var(--color-primary-700);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-6);
+            border: 1px solid var(--color-primary-200);
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: var(--font-weight-black);
+            line-height: 1.1;
+            color: var(--color-neutral-900);
+            margin-bottom: var(--space-6);
+            letter-spacing: -0.03em;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            font-size: var(--font-size-xl);
+            color: var(--color-neutral-600);
+            margin-bottom: var(--space-8);
+            line-height: var(--line-height-relaxed);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+        }
+
+        @media (max-width: 640px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-desc { font-size: var(--font-size-lg); }
+            .hero-actions { flex-direction: column; }
+        }
+
+        /* Mockup Preview */
+        .hero-mockup {
+            margin-top: var(--space-16);
+            position: relative;
+            z-index: 10;
+            padding: 0 var(--space-4);
+        }
+
+        .mockup-img {
+            max-width: 1000px;
+            width: 100%;
+            height: 500px;
+            background: var(--color-neutral-900);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--color-neutral-800);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-neutral-500);
+            font-family: monospace;
+            background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), linear-gradient(-45deg, #1e293b 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1e293b 75%), linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mockup-img::after {
+            content: "Dashboard Preview Interface";
+            background: rgba(15, 23, 42, 0.8);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-full);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: var(--space-12) var(--space-6);
+            background: var(--surface-primary);
+            border-bottom: 1px solid var(--color-neutral-100);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-6);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-black);
+            color: var(--color-neutral-900);
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: var(--space-20) var(--space-6);
+            background: var(--surface-secondary);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .section-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-neutral-900);
+            margin-bottom: var(--space-4);
+        }
+
+        .section-desc {
+            font-size: var(--font-size-lg);
+            color: var(--color-neutral-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .feature-card {
+            background: var(--surface-primary);
+            padding: var(--space-8);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-normal);
+            border: 1px solid var(--color-neutral-200);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--color-primary-200);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--color-primary-50);
+            color: var(--color-primary-600);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .feature-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-neutral-900);
+            margin-bottom: var(--space-3);
+        }
+
+        .feature-desc {
+            color: var(--color-neutral-600);
+            line-height: var(--line-height-relaxed);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: var(--space-20) var(--space-6);
+            text-align: center;
+            background: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-primary-700) 100%);
+            color: white;
+        }
+
+        .cta-title {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-6);
+            color: white;
+        }
+
+        .cta-desc {
+            font-size: var(--font-size-xl);
+            color: var(--color-primary-100);
+            margin-bottom: var(--space-8);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .footer {
+            padding: var(--space-12) var(--space-6);
+            background: var(--surface-primary);
+            border-top: 1px solid var(--color-neutral-200);
+            text-align: center;
+            color: var(--color-neutral-500);
+        }
+
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-neutral-900);
+            margin-bottom: var(--space-4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="landing-nav">
+        <a href="/" class="landing-brand">
+            <svg class="landing-brand-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            B2B Logistics
+        </a>
+        <div class="landing-nav-links">
+            <a href="#features" class="landing-nav-link">Features</a>
+            <a href="#about" class="landing-nav-link">How it Works</a>
+        </div>
+        <a href="{% url 'admin_onboarding' %}" class="btn btn-primary">Login to Dashboard</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-section">
+        <div class="hero-bg-glow"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Enterprise Release 2.0</div>
+            <h1 class="hero-title">Intelligent Supply Chain <span>Management</span></h1>
+            <p class="hero-desc">The enterprise-grade platform to manage your orders, fleets, clients, and real-time shipments with absolute precision.</p>
+            <div class="hero-actions">
+                <a href="{% url 'admin_onboarding' %}" class="btn btn-primary btn-lg">Get Started Now</a>
+                <a href="#features" class="btn btn-secondary btn-lg">Explore Features</a>
+            </div>
+        </div>
+
+        <div class="hero-mockup">
+            <img src="{% static 'images/dashboard_preview.png' %}" alt="B2B Logistics Dashboard Preview" style="max-width: 1000px; width: 100%; height: auto; border-radius: var(--radius-xl); box-shadow: var(--shadow-2xl); border: 1px solid var(--color-neutral-200); margin: 0 auto; display: block;">
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value" id="count-companies">0</div>
+                <div class="stat-label">Companies</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="count-managers">0</div>
+                <div class="stat-label">Managers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="count-clients">0</div>
+                <div class="stat-label">Clients Served</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="count-drivers">0</div>
+                <div class="stat-label">Active Drivers</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">Everything you need to scale</h2>
+            <p class="section-desc">Powerful tools designed for modern logistics operations, from real-time tracking to automated dispatching.</p>
+        </div>
+        
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                </div>
+                <h3 class="feature-title">Live GPS Tracking</h3>
+                <p class="feature-desc">Monitor your entire fleet in real-time. Get accurate ETAs, speed alerts, and route playback directly on your dashboard.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                </div>
+                <h3 class="feature-title">Order Management</h3>
+                <p class="feature-desc">Seamlessly create, dispatch, and track orders. Automated digital invoicing and proof-of-delivery integration.</p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <h3 class="feature-title">Multi-Role Access</h3>
+                <p class="feature-desc">Dedicated portals for Admins, Managers, and Drivers. Complete control over permissions and access levels.</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <h3 class="feature-title">Warehouse Control</h3>
+                <p class="feature-desc">Manage multiple warehouse locations, track inventory levels globally, and review detailed stock logs.</p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-desc">JWT authentication, secure OTP verification, and comprehensive, immutable audit logs for all administrative actions.</p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </div>
+                <h3 class="feature-title">Mobile Driver App</h3>
+                <p class="feature-desc">Responsive web app for drivers to view active shipments, update statuses, and submit photo proof of deliveries.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2 class="cta-title">Ready to modernize your operations?</h2>
+        <p class="cta-desc">Join top companies managing their B2B logistics on our platform.</p>
+        <a href="{% url 'admin_onboarding' %}" class="btn btn-secondary btn-lg" style="color: var(--color-primary-700);">Create Company Account</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">
+            <svg class="landing-brand-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            B2B Logistics
+        </div>
+        <p>© 2026 B2B Logistics Platform. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Number counting animation
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                animateValue("count-companies", 0, {{ companies_count|default:0 }}, 1500);
+                animateValue("count-managers", 0, {{ managers_count|default:0 }}, 1500);
+                animateValue("count-clients", 0, {{ clients_count|default:0 }}, 1500);
+                animateValue("count-drivers", 0, {{ drivers_count|default:0 }}, 1500);
+            }, 300);
+            
+            // Add scroll listener for navbar glass effect
+            window.addEventListener('scroll', () => {
+                const nav = document.querySelector('.landing-nav');
+                if (window.scrollY > 20) {
+                    nav.style.boxShadow = 'var(--shadow-sm)';
+                } else {
+                    nav.style.boxShadow = 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>

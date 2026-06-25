@@ -1,0 +1,65 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% trans "Driver Login" %}</title>
+    
+    <!-- Link to the design system -->
+    <link rel="stylesheet" href="{% static 'css/design_system.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body style="background-color: var(--surface-secondary); display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: var(--space-4);">
+
+    <div class="auth-card" style="width: 100%; max-width: 400px; padding: var(--space-8); box-sizing: border-box; position: relative;">
+        
+        <div style="position: absolute; top: var(--space-4); right: var(--space-4);">
+            <form action="{% url 'set_language' %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <select name="language" class="form-input" onchange="this.form.submit()" style="padding: var(--space-1) var(--space-2); min-height: unset; width: auto; font-size: var(--font-size-xs);">
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% get_available_languages as LANGUAGES %}
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                        <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                            {{ language.name_local }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: var(--space-6);">
+            <div style="width: 60px; height: 60px; background: var(--color-primary-600); color: white; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+            </div>
+            <h1 class="text-2xl font-bold text-neutral-900 m-0 mb-1">{% trans "Driver App" %}</h1>
+            <p class="text-sm text-neutral-500 m-0">{% trans "Sign in to view your delivery assignments" %}</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="ds-alert ds-alert-error mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'driver_login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">{% trans "Mobile Number" %}</label>
+                <input type="tel" name="mobile" class="form-input" placeholder="{% trans "Enter registered mobile no." %}" required autofocus>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{% trans "Password (Sent via SMS)" %}</label>
+                <input type="password" name="password" class="form-input" placeholder="{% trans "Enter your temporary password" %}" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-full" style="margin-top: var(--space-2);">{% trans "Login to Dashboard" %}</button>
+        </form>
+    </div>
+
+</body>
+</html>
