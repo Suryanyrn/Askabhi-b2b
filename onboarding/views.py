@@ -144,15 +144,25 @@ def send_otp(request):
         # Send email
         subject = 'Your Verification OTP - B2B Tracking Portal'
         message = f'Your One-Time Password for company onboarding is: {otp}\n\nThis OTP is valid for 5 minutes.'
-        from_email = 'no-reply@b2bportal.com'
+        from django.conf import settings
+        from_email = settings.EMAIL_HOST_USER
         recipient_list = [email]
         
         try:
-            send_mail(subject, message, from_email, recipient_list)
-            logger.info(f"OTP sent successfully to {email}.")
+            import threading
+            def send_email_task():
+                try:
+                    send_mail(subject, message, from_email, recipient_list)
+                except Exception as e:
+                    logger.error(f"Failed to send OTP to {email}: {str(e)}")
+            
+            thread = threading.Thread(target=send_email_task)
+            thread.start()
+            
+            logger.info(f"OTP email sending initiated for {email}.")
             return JsonResponse({'status': 'success', 'message': 'OTP sent successfully to ' + email})
         except Exception as e:
-            logger.error(f"Failed to send OTP to {email}: {str(e)}")
+            logger.error(f"Failed to initiate OTP send to {email}: {str(e)}")
             return JsonResponse({'status': 'error', 'message': f'Failed to send email: {str(e)}'}, status=500)
             
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
