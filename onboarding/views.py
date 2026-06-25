@@ -56,7 +56,7 @@ def admin_onboarding(request):
         password = request.POST.get('password')
         
         # Domain Validation
-        free_domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com']
+        free_domains = ['yahoo.com', 'hotmail.com', 'outlook.com']
         domain = company_email.split('@')[1].lower() if '@' in company_email else ""
         
         if domain in free_domains:
